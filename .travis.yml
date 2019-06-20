@@ -1,0 +1,14 @@
+language: ruby
+services:
+  - mysql
+rvm:
+ - 2.5.0
+before_script:
+  - "cp test/dummy/config/database_travis.yml test/dummy/config/database.yml"
+script:
+- bundle install
+- cd test/dummy
+- bundle exec rake db:create
+- bundle exec rake db:migrate
+- cd ..
+- bundle exec rake test

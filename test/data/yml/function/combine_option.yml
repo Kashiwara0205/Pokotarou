@@ -1,0 +1,7 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道"]
+    option:
+      name: ["random", "add_id"]
