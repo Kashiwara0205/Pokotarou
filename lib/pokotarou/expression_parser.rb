@@ -1,4 +1,4 @@
-require "k_aurora/additional_methods.rb"
+require "pokotarou/additional_methods.rb"
 
 # for seed data
 class ExpressionParser

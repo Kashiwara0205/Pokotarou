@@ -1,16 +1,16 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem's version:
-require "k_aurora/version"
+require "pokotarou/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "k_aurora"
-  s.version     = KAurora::VERSION
+  s.name        = "pokotarou"
+  s.version     = Pokotarou::VERSION
   s.authors     = ["Kashiwara"]
-  s.email       = ["aurora0205k@gmail.com"]
+  s.email       = ["tamatebako0205@gmail.com"]
   s.summary     = "This gem is seeder which is very usefull"
-  s.description = "KAurora is fast seeder of 'Ruby on Rails' URL: https://github.com/Aurora0205/KAurora"
+  s.description = "Pokotarou is fast seeder of 'Ruby on Rails'"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]

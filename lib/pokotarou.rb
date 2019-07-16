@@ -1,9 +1,9 @@
-Dir[File.expand_path('../k_aurora', __FILE__) << '/*.rb'].each do |file|
+Dir[File.expand_path('../pokotarou', __FILE__) << '/*.rb'].each do |file|
   require file
 end
 require "activerecord-import"
 
-module KAurora
+module Pokotarou
   class NotFoundLoader < StandardError; end
 
   class << self
