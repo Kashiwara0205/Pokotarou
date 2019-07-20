@@ -6,5 +6,5 @@ Default:
   Member:
     loop: 2
     col:
-      name: <maked[:Pref][:name]>
+      name: <maked[:Default][:Pref][:name]>
       pref_id: F|Pref

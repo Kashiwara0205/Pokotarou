@@ -6,8 +6,8 @@ Default:
   Member:
     loop: 2
     col:
-      name: <maked[:Pref][:name]>
-      pref_id: <maked[:Pref][:id]>
+      name: <maked[:Default][:Pref][:name]>
+      pref_id: <maked[:Default][:Pref][:id]>
 
 Default2:
   Pref: 
@@ -17,5 +17,5 @@ Default2:
   Member:
     loop: 2
     col:
-      name: <maked[:Pref][:name]>
-      pref_id: <maked[:Pref][:id]>
+      name: <maked[:Default2][:Pref][:name]>
+      pref_id: <maked[:Default2][:Pref][:id]>

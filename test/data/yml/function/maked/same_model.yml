@@ -7,6 +7,6 @@ Default:
     loop: 3
     col:
       name: ["Tarou", "Jirou", "Saburou"]
-      remarks: <maked[:Member][:name]>
-      birthday: <convert_name_to_birthday(maked[:Member][:name])>
+      remarks: <maked[:Default][:Member][:name]>
+      birthday: <convert_name_to_birthday(maked[:Default][:Member][:name])>
       pref_id: F|Pref

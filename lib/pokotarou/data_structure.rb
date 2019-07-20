@@ -1,23 +1,26 @@
 class DataStructure
   class << self
     def gen data
-      data.reduce([]) do |acc, r|
-        # r.second is block_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
-        gen_structure(acc, r.second)
+      # return data structure bellow
+      # [{ block_name => { model_name => { column_configration }}}, ...]
+      data.reduce(Hash.new) do |acc, r|
+        # r.first is block_name
+        # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
+        acc[r.first] = gen_structure(r.second)
+
+        acc
       end
     end
 
     private
 
-    def gen_structure gen_acc, block_data
-      block_data.reduce(gen_acc) do |acc, r|
-        # r[0] is symbolize model
-        # convert symbol to string
-        r[0] = r[0].to_s
+    def gen_structure model_data
+      model_data.reduce(Hash.new) do |acc, r|
         # r.second is config_data, like {loop: 3, ...}
-        set_col_type(r.second, r[0])
+        set_col_type(r.second, r[0].to_s)
+        acc[r[0]] = r.second
 
-        acc.push(r)
+        acc
       end
     end
 
@@ -28,7 +31,7 @@ class DataStructure
       config_data[:col] ||= Hash.new    
       model.columns.each do |e|
         symbol_col_name = e.name.to_sym
-
+        
         unless exists_seed_data?(config_data, symbol_col_name)
           # prepare setting to run default seed
           # set nil to seed data

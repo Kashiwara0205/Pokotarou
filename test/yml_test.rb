@@ -189,10 +189,10 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
   # outline: whether pokotarou can register after change parameter
   # expected value: registerd 6 datas
   test "after change parameter" do
-    aurora_data = Pokotarou.get_data("test/data/yml/function/array_insert.yml")
-    assert_equal 3, aurora_data[0][1][:loop]
-    aurora_data[0][1][:loop] = 6
-    Pokotarou.do_seed(aurora_data)
+    config_data = Pokotarou.get_config("test/data/yml/function/array_insert.yml")
+    assert_equal 3, config_data[:Default][:Pref][:loop]
+    config_data[:Default][:Pref][:loop] = 6
+    Pokotarou.do_seed(config_data)
     assert_equal 6, Pref.all.count
   end
 
