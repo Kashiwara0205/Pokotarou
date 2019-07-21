@@ -1,0 +1,11 @@
+Default:
+  Pref: 
+    loop: 2
+    col:
+      name: ["北海道", "青森県"]
+Default2:
+  Member:
+    loop: 2
+    col:
+      name: <maked[:Default][:Pref][:name]>
+      pref_id: F|Pref
