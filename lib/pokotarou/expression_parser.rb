@@ -31,7 +31,7 @@ class ExpressionParser
           end
         end
       rescue => e
-        ParseError.new("Failed Expression parse")
+        ParseError.new("Failed Expression parse:#{e.message}")
       end
     end
   end
@@ -64,7 +64,7 @@ class LoopExpressionParser
           return 1
         end
       rescue => e
-        ParseError.new("Failed Loop Expression parse")
+        ParseError.new("Failed Loop Expression parse: #{e.message}")
       end
     end
   end
