@@ -1,3 +1,6 @@
+class RegistError < StandardError; end
+class SeedError < StandardError; end
+
 class DataRegister
   class << self
     def regist data
@@ -5,29 +8,13 @@ class DataRegister
       maked = Hash.new
       # init model_data to cache data of model
       model_cache = Hash.new
-      data.each do |sym_block, model_data|
-        model_data.each do |e|
-          str_model = e.first.to_s
-          save_model_cache(model_cache, str_model)
-          # model_data.values is config_data
-          config_data = e.second
-          # col_arr: [:col1, :col2, :col3]
-          col_arr = config_data[:col].keys
-
-          # set expand expression for loop '<>' and ':' and so on...
-          set_loop_expand_expression(config_data, maked)
-          # if there is no setting data, set default seed data
-          set_default_seed(config_data)
-          # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
-          seed_arr = 
-            get_seed_arr(model_cache[str_model][:model], sym_block,
-                         model_cache[str_model][:sym_model], config_data, maked)
-
-          output_log(config_data[:log]) 
-
-          # execute insert
-          execute(model_cache[str_model][:model], 
-                  config_data, model_cache[str_model][:table_name], col_arr, seed_arr)
+      ActiveRecord::Base.transaction do
+        begin
+          data.each do |sym_block, model_data|
+            regist_models(sym_block, model_data, maked, model_cache)
+          end
+        rescue => e
+          raise StandardError.new("#{e.message}")
         end
       end
     end
@@ -43,6 +30,39 @@ class DataRegister
         ActiveRecord::Base.connection.execute(insert_query)
       else
         model.import(col_arr, seed_arr.transpose, validate: config_data[:validate], timestamps: false)
+      end
+    end
+
+    def regist_models sym_block, model_data, maked, model_cache
+      model_data.each do |e|
+        str_model = e.first.to_s
+        save_model_cache(model_cache, str_model)
+        # model_data.values is config_data
+        config_data = e.second
+        # col_arr: [:col1, :col2, :col3]
+        col_arr = config_data[:col].keys
+
+        # set expand expression for loop '<>' and ':' and so on...
+        set_loop_expand_expression(config_data, maked)
+        # if there is no setting data, set default seed data
+        set_default_seed(config_data)
+        # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
+        seed_arr = 
+          get_seed_arr(model_cache[str_model][:model], sym_block,
+                         model_cache[str_model][:sym_model], config_data, maked)
+
+        output_log(config_data[:log]) 
+        begin
+          # execute insert
+          execute(model_cache[str_model][:model], 
+                  config_data, model_cache[str_model][:table_name], col_arr, seed_arr)
+        rescue => e
+          raise RegistError.new("
+            block: #{sym_block}
+            model: #{str_model}
+            message: #{e.message}
+          ")
+        end
       end
     end
 
@@ -78,25 +98,32 @@ class DataRegister
         set_autoincrement(config_data, model, loop_size)
       end
 
-      config_data[:col].map do |key, val| 
-        # set expand expression '<>' and ':' and so on...
-        set_expand_expression(config_data, key, val, maked)
-        # get clone data to use 'maked function' correctly
-        # if it doesn't use clone, will be received destructive effect by rotate!
-        expanded_val = config_data[:col][key].clone
-        option_conf = options.nil? ? nil : Option.gen(options[key])
-        # Take count yourself, because .with_index is slow
-        cnt = 0
-        seeds = 
-          loop_size.times.map do
-            seed = option_conf.nil? ? get_seed(expanded_val, cnt) : get_seed_with_option(expanded_val, option_conf, cnt)
-            cnt += 1
+      config_data[:col].map do |key, val|
+        begin 
+          # set expand expression '<>' and ':' and so on...
+          set_expand_expression(config_data, key, val, maked)
+          expanded_val = config_data[:col][key]
+          option_conf = options.nil? ? nil : Option.gen(options[key])
+          # Take count yourself, because .with_index is slow
+          cnt = 0
+          seeds = 
+            loop_size.times.map do
+              seed = option_conf.nil? ? get_seed(expanded_val, cnt) : get_seed_with_option(expanded_val, option_conf, cnt)
+              cnt += 1
 
-            seed
-          end
-        update_maked_data(maked, sym_block, sym_model, key, seeds)
+              seed
+            end
+          update_maked_data(maked, sym_block, sym_model, key, seeds)
 
-        seeds
+          seeds
+        rescue => e
+          raise SeedError.new("
+            block: #{sym_block}
+            model: #{sym_model}
+            column: #{key}
+            message: #{e.message}
+          ")
+        end
       end
     end
 
