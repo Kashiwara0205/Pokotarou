@@ -151,6 +151,15 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal Date.parse('1997/02/03'), saburou.birthday
   end
 
+  # outline: whether 'maked function' works when used other blocks
+  # expected value: registerd 3 datas
+  test "maked(other block)" do
+    Pokotarou.execute("test/data/yml/function/maked/other_block.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.where(name: "北海道").present?
+    assert_equal true, Member.where(name: "青森県").present?
+  end
+
   # outline: whether 'expression_expansion' of loop works
   # expected value: registerd 3 datas
   test "expression_expansion of loop" do
@@ -189,10 +198,10 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
   # outline: whether pokotarou can register after change parameter
   # expected value: registerd 6 datas
   test "after change parameter" do
-    aurora_data = Pokotarou.get_data("test/data/yml/function/array_insert.yml")
-    assert_equal 3, aurora_data[0][1][:loop]
-    aurora_data[0][1][:loop] = 6
-    Pokotarou.do_seed(aurora_data)
+    config_data = Pokotarou.get_config("test/data/yml/function/array_insert.yml")
+    assert_equal 3, config_data[:Default][:Pref][:loop]
+    config_data[:Default][:Pref][:loop] = 6
+    Pokotarou.do_seed(config_data)
     assert_equal 6, Pref.all.count
   end
 

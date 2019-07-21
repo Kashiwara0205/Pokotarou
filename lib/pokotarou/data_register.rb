@@ -4,28 +4,31 @@ class DataRegister
       # init maked to accumulate maded data
       maked = Hash.new
       # init model_data to cache data of model
-      model_data = Hash.new
-      data.each do |e|
-        str_model = e.first
-        cache_model_data(model_data, str_model)
-        # e.second is config_data
-        config_data = e.second
-        # col_arr: [:col1, :col2, :col3]
-        col_arr = config_data[:col].keys
+      model_cache = Hash.new
+      data.each do |sym_block, model_data|
+        model_data.each do |e|
+          str_model = e.first.to_s
+          save_model_cache(model_cache, str_model)
+          # model_data.values is config_data
+          config_data = e.second
+          # col_arr: [:col1, :col2, :col3]
+          col_arr = config_data[:col].keys
 
-        # set expand expression for loop '<>' and ':' and so on...
-        set_loop_expand_expression(config_data, maked)
-        # if there is no setting data, set default seed data
-        set_default_seed(config_data)
-        # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
-        seed_arr = 
-          get_seed_arr(model_data[str_model][:model], 
-                       model_data[str_model][:sym_model], config_data, maked)
+          # set expand expression for loop '<>' and ':' and so on...
+          set_loop_expand_expression(config_data, maked)
+          # if there is no setting data, set default seed data
+          set_default_seed(config_data)
+          # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
+          seed_arr = 
+            get_seed_arr(model_cache[str_model][:model], sym_block,
+                         model_cache[str_model][:sym_model], config_data, maked)
 
-        # execute insert
-        output_log(config_data[:log]) 
-        execute(model_data[str_model][:model], 
-                config_data, model_data[str_model][:table_name], col_arr, seed_arr)
+          output_log(config_data[:log]) 
+
+          # execute insert
+          execute(model_cache[str_model][:model], 
+                  config_data, model_cache[str_model][:table_name], col_arr, seed_arr)
+        end
       end
     end
 
@@ -43,11 +46,10 @@ class DataRegister
       end
     end
 
-    def cache_model_data model_data, str_model
-      return if model_data[str_model].present?
-      
+    def save_model_cache model_cache, str_model
+      return if model_cache[str_model].present?
       model = eval(str_model)
-      model_data[str_model] = {
+      model_cache[str_model] = {
         model: model,
         sym_model: str_model.to_sym,
         table_name: model.table_name
@@ -67,7 +69,7 @@ class DataRegister
       end
     end
     
-    def get_seed_arr model, sym_model, config_data, maked
+    def get_seed_arr model, sym_block, sym_model, config_data, maked
       options = config_data[:option]
       loop_size = config_data[:loop]
 
@@ -92,7 +94,7 @@ class DataRegister
 
             seed
           end
-        update_maked_data(maked, sym_model, key, seeds)
+        update_maked_data(maked, sym_block, sym_model, key, seeds)
 
         seeds
       end
@@ -131,10 +133,11 @@ class DataRegister
       Option.apply(arr, option, cnt)
     end
 
-    def update_maked_data maked, sym_model, col, seed
+    def update_maked_data maked, sym_block, sym_model, col, seed
       # maked: { key: Model, value: {key: col1, val: [col1_element, col1_element]} }
-      maked[sym_model] ||= Hash.new
-      maked[sym_model][col] = seed
+      maked[sym_block] ||= Hash.new
+      maked[sym_block][sym_model] ||= Hash.new
+      maked[sym_block][sym_model][col] = seed
     end
 
     def output_log log

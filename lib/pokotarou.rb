@@ -8,9 +8,7 @@ module Pokotarou
 
   class << self
     def execute filepath
-      contents = load_file(filepath)
-      data = DataStructure.gen(contents)
-      DataRegister.regist(data)
+      do_seed(get_config(filepath))
     end
 
     def import filepath
@@ -21,7 +19,7 @@ module Pokotarou
       AdditionalMethods.remove()
     end
 
-    def get_data filepath
+    def get_config filepath
       contents = load_file(filepath)
       DataStructure.gen(contents)
     end
