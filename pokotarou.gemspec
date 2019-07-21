@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Kashiwara"]
   s.email       = ["tamatebako0205@gmail.com"]
   s.summary     = "This gem is seeder which is very usefull"
-  s.description = "Pokotarou is fast seeder of 'Ruby on Rails' URL: https://github.com/Tamatebako0205/Pokotarou"
+  s.description = "Pokotarou is convenient seeder of 'Ruby on Rails' URL: https://github.com/Tamatebako0205/Pokotarou"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]

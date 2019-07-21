@@ -1,5 +1,5 @@
-![s_PokotarouLogo](https://user-images.githubusercontent.com/52961642/61586183-ef59b580-aba8-11e9-83b0-19eac7339982.png)
-
+![s_PokotarouLogo](https://user-images.githubusercontent.com/52961642/61586183-ef59b580-aba8-11e9-83b0-19eac7339982.png)  
+[![Gem Version](https://badge.fury.io/rb/pokotarou.svg)](https://badge.fury.io/rb/pokotarou)
 [![Build Status](https://travis-ci.org/Tamatebako0205/Pokotarou.svg?branch=master)](https://travis-ci.org/Tamatebako0205/Pokotarou)
 
 Pokotarou is convenient seeder of 'Ruby on Rails' that uses .yml
