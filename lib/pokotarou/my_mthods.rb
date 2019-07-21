@@ -1,6 +1,5 @@
 class NothingDataError < StandardError; end
 
-
 # return rotated val in passed array
 def get_rotated_val array, cnt
   raise NothingDataError.new("Nothing seed data") if array.nil?
