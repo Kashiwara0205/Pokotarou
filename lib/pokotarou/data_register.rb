@@ -91,8 +91,8 @@ class DataRegister
     
     def get_seed_arr model, sym_block, sym_model, config_data, maked
       options = config_data[:option]
+      convert_conf = config_data[:convert]
       loop_size = config_data[:loop]
-
 
       if apply_autoincrement?(config_data[:autoincrement])
         set_autoincrement(config_data, model, loop_size)
@@ -103,12 +103,22 @@ class DataRegister
           # set expand expression '<>' and ':' and so on...
           set_expand_expression(config_data, key, val, maked)
           expanded_val = config_data[:col][key]
+          expanded_val_size = expanded_val.size
+
+          # apply converter
+          if convert_conf.present?
+            expanded_val = Converter.convert(expanded_val, convert_conf[key])
+          end
+
+          # get option configration
           option_conf = options.nil? ? nil : Option.gen(options[key])
+
           # Take count yourself, because .with_index is slow
           cnt = 0
           seeds = 
             loop_size.times.map do
-              seed = option_conf.nil? ? get_seed(expanded_val, cnt) : get_seed_with_option(expanded_val, option_conf, cnt)
+              seed =
+                option_conf.nil? ? get_seed(expanded_val, expanded_val_size, cnt) : get_seed_with_option(expanded_val, expanded_val_size, option_conf, cnt)
               cnt += 1
 
               seed
@@ -135,10 +145,12 @@ class DataRegister
 
     def set_autoincrement config_data, model, loop_size
       last_record = model.last
-      # use pluck to optimize(suppress make object)
-      additions = model.all.pluck(:id).size + loop_size      
-      latest_id = last_record.nil? ? 1 : last_record.id + 1
-      config_data[:col][:id] = [*latest_id..additions]
+      # if id is nothing, get 0
+      current_id = last_record.nil? ? 0 : last_record.id
+      additions = current_id + loop_size
+      next_id = current_id + 1
+
+      config_data[:col][:id] = [*next_id..additions]
     end
 
     def set_expand_expression config_data, key, val, maked
@@ -152,12 +164,12 @@ class DataRegister
         LoopExpressionParser.parse(config_data[:loop], maked)  
     end
 
-    def get_seed arr, cnt
-      get_rotated_val(arr, cnt)
+    def get_seed arr, size, cnt
+      get_rotated_val(arr, size, cnt)
     end
 
-    def get_seed_with_option arr, option, cnt
-      Option.apply(arr, option, cnt)
+    def get_seed_with_option arr, size, option, cnt
+      Option.apply(arr, size, option, cnt)
     end
 
     def update_maked_data maked, sym_block, sym_model, col, seed
