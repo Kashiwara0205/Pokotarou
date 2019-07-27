@@ -340,3 +340,46 @@ You can update pokotarou's parameter
   config_data[:Default][:Pref][:loop] = 6
   Pokotarou.do_seed(config_data)
 ```
+
+#### Converte seed data
+
+You can convert seed data
+
+```
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["Hokkaido", "Aomori", "Iwate"]
+    convert:
+      name: ["nil(0..2)"]
+```
+
+```
+[nil, nil, nil]
+```
+
+complex version
+
+```
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道", "青森県", "岩手県"]
+    convert:
+      name: ["empty(0..0)", "nil(1..2)"]
+```
+
+```
+["", nil, nil]
+```
+
+converter list
+
+|converter |description                               |
+|:---------|------------------------------------------|
+| empty    | convert val to empty                     |
+| nil      | convert val to nil                       |
+| big_text | convert val to big_text("text" * 50)     |
+| br_text  | convert val to br_text("text\n" * 5)     |
