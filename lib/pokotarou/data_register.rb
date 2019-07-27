@@ -91,6 +91,7 @@ class DataRegister
     
     def get_seed_arr model, sym_block, sym_model, config_data, maked
       options = config_data[:option]
+      convert_conf = config_data[:convert]
       loop_size = config_data[:loop]
 
       if apply_autoincrement?(config_data[:autoincrement])
@@ -103,7 +104,15 @@ class DataRegister
           set_expand_expression(config_data, key, val, maked)
           expanded_val = config_data[:col][key]
           expanded_val_size = expanded_val.size
+
+          # apply converter
+          if convert_conf.present?
+            expanded_val = Converter.convert(expanded_val, convert_conf[key])
+          end
+
+          # get option configration
           option_conf = options.nil? ? nil : Option.gen(options[key])
+
           # Take count yourself, because .with_index is slow
           cnt = 0
           seeds = 

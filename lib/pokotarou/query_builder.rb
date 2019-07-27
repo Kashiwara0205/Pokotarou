@@ -36,7 +36,6 @@ class QueryBuilder
        col_str.chop << ")"
     end
 
-
     def add_double_quote str
       "\"" << str << "\""
     end

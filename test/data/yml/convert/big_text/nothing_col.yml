@@ -1,0 +1,5 @@
+Default:
+  Pref: 
+    loop: 3
+    convert:
+      name: ["big_text(0..2)"]
