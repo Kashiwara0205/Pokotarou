@@ -62,7 +62,7 @@ class DataStructure
       associations = model.reflect_on_all_associations(:belongs_to)
       return { } if associations.empty?
       associations.reduce(Hash.new)do |acc, r|
-        model = r.name.to_s.classify
+        model = r.name.to_s.camelize
         if Object.const_defined?(model.to_sym)
           acc[r.foreign_key.to_sym] = eval(model)
         end
