@@ -13,7 +13,6 @@ You don't have to write a program for seeder
 
 ### Fast speed
 If it is the following table, 10,000 records can regist in 0.4s on average
-Also, If you enable 'optimize option', 10,000 records can regist in 0.23s on average
 
 |Field|Type|NULL|
 |:---|:---|:---|
@@ -318,17 +317,6 @@ Default:
     autoincrement: false
     col:
       id: [100, 101, 102]
-```
-
-#### Optimize
-
-If you enable 'optimize', Pokotarou Run a query builder, but disable validation
-
-```
-Default:
-  Pref:
-    loop: 3
-    optimaize: true
 ```
 
 #### Pokotarou Handler
