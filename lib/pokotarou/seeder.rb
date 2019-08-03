@@ -1,8 +1,7 @@
 class Seeder 
   class << self
-    MAX_LOOP = 100
     def gen config_data, key
-      n = config_data[:loop] > MAX_LOOP ? MAX_LOOP : config_data[:loop]
+      n = config_data[:loop]
       type = config_data[:type][key]
       enum = config_data[:enum][key]
       foreign_key = config_data[:foreign_key][key]

@@ -195,16 +195,6 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "岩手県").present?
   end
 
-  # outline: whether pokotarou can register after change parameter
-  # expected value: registerd 6 datas
-  test "after change parameter" do
-    config_data = Pokotarou.get_config("test/data/yml/function/array_insert.yml")
-    assert_equal 3, config_data[:Default][:Pref][:loop]
-    config_data[:Default][:Pref][:loop] = 6
-    Pokotarou.do_seed(config_data)
-    assert_equal 6, Pref.all.count
-  end
-
   # outline: whether 'combine_option function' works
   # expected value: registerd 3 datas
   test "combine_option" do
@@ -361,4 +351,31 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: nil).present?
     assert_equal true, Pref.where(name: nil).present?
   end
+
+  # outline: whether 'pokotarou handler delete' works
+  # expected value: registerd 3 datas
+  #                 registerd ["北海道", "青森県", "岩手県"]
+  test "pokotarou handler(delete)" do
+    handler = Pokotarou.gen_handler("test/data/yml/function/automatic_foreign_key.yml")
+    handler.delete_model(:Default, :Member)
+    Pokotarou.execute(handler.get_data())
+
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.where(name: "北海道").present?
+    assert_equal true, Pref.where(name: "青森県").present?
+    assert_equal true, Pref.where(name: "岩手県").present?
+
+    assert_equal 0, Member.all.count
+  end
+
+  # outline: whether 'pokotarou handler change_loop' works
+  # expected value: registerd 5 datas
+  test "pokotarou handler(change_loop)" do
+    handler = Pokotarou.gen_handler("test/data/yml/function/nothing_conf.yml")
+    handler.change_loop(:Default, :Pref, 5)
+    Pokotarou.execute(handler.get_data())
+
+    assert_equal 5, Pref.all.count
+  end
+
 end

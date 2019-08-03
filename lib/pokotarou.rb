@@ -7,8 +7,13 @@ module Pokotarou
   class NotFoundLoader < StandardError; end
 
   class << self
-    def execute filepath
-      do_seed(get_config(filepath))
+    def execute input
+      # if input is filepath, generate config_data
+      if input.kind_of?(String)
+        DataRegister.regist(gen_config(input))
+      else
+        DataRegister.regist(input)
+      end
     end
 
     def import filepath
@@ -19,16 +24,17 @@ module Pokotarou
       AdditionalMethods.remove()
     end
 
-    def get_config filepath
+    def gen_handler filepath
+      PokotarouHandler.new(gen_config(filepath))
+    end
+
+    private
+
+    def gen_config filepath
       contents = load_file(filepath)
       DataStructure.gen(contents)
     end
 
-    def do_seed data
-      DataRegister.regist(data)
-    end
-
-    private
 
     def load_file filepath
       case File.extname(filepath)
