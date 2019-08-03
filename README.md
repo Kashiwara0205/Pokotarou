@@ -331,17 +331,29 @@ Default:
     optimaize: true
 ```
 
-#### Update parameter
+#### Pokotarou Handler
 
-You can update pokotarou's parameter
+if you use Pokotarou handler, can update pokotarou's parameter
+
+In the following example, the number of loops is changed
 
 ```
-  config_data = Pokotarou.get_config("ConfigrationFilePath")
-  config_data[:Default][:Pref][:loop] = 6
-  Pokotarou.do_seed(config_data)
+  handler = Pokotarou.gen_handler("ConfigrationFilePath")
+  # change loop number
+  handler.change_loop(:Default, :Pref, 6)
+  Pokotarou.execute(handler.get_data)
 ```
 
-#### Converte seed data
+In the following example, delete class in parameter
+
+```
+  handler = Pokotarou.gen_handler("ConfigrationFilePath")
+  # delete class in parameter
+  handler.delete(:Default, :Member)
+  Pokotarou.execute(handler.get_data)
+```
+
+#### Convert seed data
 
 You can convert seed data
 
@@ -375,9 +387,7 @@ Default:
 ["", nil, nil]
 ```
 
-converter list
-
-|converter |description                               |
+|convert   |description                               |
 |:---------|------------------------------------------|
 | empty    | convert val to empty                     |
 | nil      | convert val to nil                       |
