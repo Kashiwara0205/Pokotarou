@@ -366,7 +366,7 @@ Default:
   Pref: 
     loop: 3
     col:
-      name: ["北海道", "青森県", "岩手県"]
+      name: ["Hokkaido", "Aomori", "Iwate"]
     convert:
       name: ["empty(0..0)", "nil(1..2)"]
 ```
