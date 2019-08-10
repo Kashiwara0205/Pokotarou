@@ -363,11 +363,20 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "岩手県_2").present?
   end
 
+  # outline: whether 'pokotarou handler delete_block' works
+  # expected value: registerd 3 datas
+  test "pokotarou handler(delete_block)" do
+    handler = Pokotarou.gen_handler("test/data/yml/function/same_model_conf.yml")
+    handler.delete_block(:Default)
+    Pokotarou.execute(handler.get_data())
 
-  # outline: whether 'pokotarou handler delete' works
+    assert_equal 3, Pref.all.count
+  end
+
+  # outline: whether 'pokotarou handler delete_model works
   # expected value: registerd 3 datas
   #                 registerd ["北海道", "青森県", "岩手県"]
-  test "pokotarou handler(delete)" do
+  test "pokotarou handler(delete_model)" do
     handler = Pokotarou.gen_handler("test/data/yml/function/automatic_foreign_key.yml")
     handler.delete_model(:Default, :Member)
     Pokotarou.execute(handler.get_data())
@@ -380,6 +389,20 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal 0, Member.all.count
   end
 
+  # outline: whether 'pokotarou handler delete_col works
+  # expected value: registerd 3 datas
+  #                 not_registerd ["北海道", "青森県", "岩手県"]
+  test "pokotarou handler(delete_col)" do
+    handler = Pokotarou.gen_handler("test/data/yml/function/array_insert.yml")
+    handler.delete_col(:Default, :Pref, :name)
+    Pokotarou.execute(handler.get_data())
+
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.find_by(name: "北海道").nil?
+    assert_equal true, Pref.find_by(name: "青森県").nil?
+    assert_equal true, Pref.find_by(name: "岩手県").nil?
+  end
+
   # outline: whether 'pokotarou handler change_loop' works
   # expected value: registerd 5 datas
   test "pokotarou handler(change_loop)" do
@@ -388,6 +411,20 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     Pokotarou.execute(handler.get_data())
 
     assert_equal 5, Pref.all.count
+  end
+
+  # outline: whether 'pokotarou handler change_arr works
+  # expected value: registerd 3 datas
+  #                 registerd ["茨城県", "栃木県", "沖縄県"]
+  test "pokotarou handler(change_arr)" do
+    handler = Pokotarou.gen_handler("test/data/yml/function/array_insert.yml")
+    handler.change_col(:Default, :Pref, :name, ["茨城県", "栃木県", "沖縄県"])
+    Pokotarou.execute(handler.get_data())
+
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.find_by(name: "茨城県").present?
+    assert_equal true, Pref.find_by(name: "栃木県").present?
+    assert_equal true, Pref.find_by(name: "沖縄県").present?
   end
 
   # outline: whether '< nil > function' works
