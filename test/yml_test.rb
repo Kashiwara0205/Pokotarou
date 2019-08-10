@@ -390,4 +390,10 @@ class Pokotarou::YmlTest < ActiveSupport::TestCase
     assert_equal 5, Pref.all.count
   end
 
+  # outline: whether '< nil > function' works
+  # expected value: registerd 3 datas
+  test "insert nil" do
+    Pokotarou.execute("test/data/yml/function/nil.yml")
+    assert_equal 3, Pref.where(name: nil).count
+  end
 end

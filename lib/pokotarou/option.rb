@@ -9,6 +9,7 @@ class Option
 
     def apply arr, size, option_conf, cnt = 0
       selected_val = select(option_conf[:select], arr, size, cnt)
+
       add(option_conf[:add], selected_val, cnt)
     end
 
@@ -28,6 +29,7 @@ class Option
 
     def select option, arr, size, cnt
       return arr.sample if option == "random"
+
       # default return rotate
       get_rotated_val(arr, size, cnt)
     end
