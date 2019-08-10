@@ -165,7 +165,7 @@ class DataRegister
     end
 
     def get_seed arr, size, cnt
-      get_rotated_val(arr, size, cnt)
+      ArrayOperation.get_rotated_val(arr, size, cnt)
     end
 
     def get_seed_with_option arr, size, option, cnt
