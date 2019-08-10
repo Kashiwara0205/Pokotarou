@@ -31,7 +31,7 @@ class Option
       return arr.sample if option == "random"
 
       # default return rotate
-      get_rotated_val(arr, size, cnt)
+      ArrayOperation.get_rotated_val(arr, size, cnt)
     end
 
     def add option, val, cnt
