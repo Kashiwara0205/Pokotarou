@@ -57,7 +57,7 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
   #                 registerd ["茨城県", "栃木県", "沖縄県"]
   test "pokotarou handler(change_arr)" do
     handler = Pokotarou.gen_handler("test/data/handler/change_arr.yml")
-    handler.change_col(:Default, :Pref, :name, ["茨城県", "栃木県", "沖縄県"])
+    handler.change_seed(:Default, :Pref, :name, ["茨城県", "栃木県", "沖縄県"])
     Pokotarou.execute(handler.get_data())
 
     assert_equal 3, Pref.all.count
