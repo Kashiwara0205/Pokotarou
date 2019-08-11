@@ -23,7 +23,7 @@ class PokotarouHandler
     @data[sym_block][sym_class][:loop] = n
   end
 
-  def change_col sym_block, sym_class, sym_col, arr
+  def change_seed sym_block, sym_class, sym_col, arr
     @data[sym_block][sym_class][:col][sym_col] = arr
   end
 
