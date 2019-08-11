@@ -375,6 +375,7 @@ In the following example, seed data is changed
 ```
 
 <b>Delete Operation</b>
+
 In the following example, delete block config
 
 ```ruby
