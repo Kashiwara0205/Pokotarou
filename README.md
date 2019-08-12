@@ -1,4 +1,6 @@
-![s_Pokotarou2](https://user-images.githubusercontent.com/52961642/62829303-9cb66b00-bc35-11e9-8660-e5ea752631e2.png)  
+![s_PokotarouLogo](https://user-images.githubusercontent.com/52961642/62843884-46f6c700-bcf8-11e9-8267-b9fad8f34085.png)
+
+
 [![Gem Version](https://badge.fury.io/rb/pokotarou.svg)](https://badge.fury.io/rb/pokotarou)
 [![Build Status](https://travis-ci.org/Tamatebako0205/Pokotarou.svg?branch=master)](https://travis-ci.org/Tamatebako0205/Pokotarou)
 
