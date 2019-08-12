@@ -1,10 +1,10 @@
 require "pokotarou/additional_methods.rb"
 class ParseError < StandardError; end
+FOREIGN_KEY_SYMBOL = "F|"
 
 # for seed data
 class ExpressionParser
   class << self
-    FOREIGN_KEY_SYMBOL = "F|"
     def parse config_val, maked
       begin
         require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
@@ -38,7 +38,6 @@ end
 # for loop data
 class LoopExpressionParser
   class << self
-    FOREIGN_KEY_SYMBOL = "F|"
     def parse config_val, maked
       begin
         require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
