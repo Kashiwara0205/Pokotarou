@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/Tamatebako0205/Pokotarou.svg?branch=master)](https://travis-ci.org/Tamatebako0205/Pokotarou)
 
 Pokotarou is convenient seeder of 'Ruby on Rails'
-Currently only mysql supported
+In MySql, operation has been confirmed
 
 ## Features
 

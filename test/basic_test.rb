@@ -184,17 +184,6 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "岩手県").present?
   end
 
-  # outline: whether 'optimize' works
-  # expected value: registerd 3 datas
-  #                 registerd ["北海道", "青森県", "岩手県"]
-  test "optimize" do
-    Pokotarou.execute("test/data/basic/optimize.yml")
-    assert_equal 3, Pref.all.count
-    assert_equal true, Pref.where(name: "北海道").present?
-    assert_equal true, Pref.where(name: "青森県").present?
-    assert_equal true, Pref.where(name: "岩手県").present?
-  end
-
   # outline: whether 'automatic foreign key' works
   # expected value: registerd 6 datas(pref: 3, member: 3)
   test "automatic foreign_key" do
