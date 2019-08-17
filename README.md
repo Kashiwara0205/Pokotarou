@@ -2,7 +2,7 @@
 
 
 [![Gem Version](https://badge.fury.io/rb/pokotarou.svg)](https://badge.fury.io/rb/pokotarou)
-[![Build Status](https://travis-ci.org/Tamatebako0205/Pokotarou.svg?branch=master)](https://travis-ci.org/Tamatebako0205/Pokotarou)
+[![Build Status](https://travis-ci.org/Kashiwara0205/Pokotarou.svg?branch=master)](https://travis-ci.org/Kashiwara0205/Pokotarou)
 
 Pokotarou is convenient seeder of 'Ruby on Rails'
 In MySql, operation has been confirmed
