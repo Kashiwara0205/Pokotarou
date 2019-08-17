@@ -21,18 +21,6 @@ class DataRegister
 
     private
 
-    def execute model, config_data, table_name, col_arr, seed_arr
-      # optimize is more faster than activerecord-import
-      # however, sql.conf setting is necessary to use
-      if config_data[:optimize] 
-        # seed_arr.transpose: [[col1_element, col2_element], [col1_element, col2_element]...]
-        insert_query = QueryBuilder.insert(table_name, col_arr, seed_arr.transpose)
-        ActiveRecord::Base.connection.execute(insert_query)
-      else
-        model.import(col_arr, seed_arr.transpose, validate: config_data[:validate], timestamps: false)
-      end
-    end
-
     def regist_models sym_block, model_data, maked, model_cache
       model_data.each do |e|
         str_model = e.first.to_s
@@ -53,9 +41,7 @@ class DataRegister
 
         output_log(config_data[:log]) 
         begin
-          # execute insert
-          execute(model_cache[str_model][:model], 
-                  config_data, model_cache[str_model][:table_name], col_arr, seed_arr)
+          model_cache[str_model][:model].import(col_arr, seed_arr.transpose, validate: config_data[:validate], timestamps: false)
         rescue => e
           raise RegistError.new("
             block: #{sym_block}

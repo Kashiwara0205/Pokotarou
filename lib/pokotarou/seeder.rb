@@ -13,7 +13,7 @@ class Seeder
       return make_array(n, ->(){ rand(0.0..1_000_000_000.0) }) if type == "decimal"
       return make_array(n, ->(){ SecureRandom.hex(20) }) if type == "string"
       return make_array(n, ->(){ SecureRandom.hex(300) }) if ["text", "binary"].include?(type)
-      return make_array(n, ->(){ [1, 0].sample }) if type == "boolean"
+      return make_array(n, ->(){ [true, false].sample }) if type == "boolean"
       return make_string_array(n, enum) if type == "string"
       return make_datetime_array() if ["string", "datetime", "date", "time"].include?(type)
     end

@@ -1,6 +1,0 @@
-Default:
-  Pref: 
-    loop: 3
-    optimaize: true
-    col:
-      name: ["北海道", "青森県", "岩手県"]
