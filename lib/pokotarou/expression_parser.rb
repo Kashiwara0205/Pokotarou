@@ -67,7 +67,7 @@ class LoopExpressionParser
   end
 end
 
-FOREIGN_KEY = /^F\|[A-Z][A-Za-z0-9]*$/
+FOREIGN_KEY = /^F\|[A-Z][:A-Za-z0-9]*$/
 def is_foreign_key? val;
   return false unless val.kind_of?(String)
   FOREIGN_KEY =~ val
