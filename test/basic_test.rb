@@ -200,4 +200,13 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     Pokotarou.execute("test/data/basic/nil.yml")
     assert_equal 3, Pref.where(name: nil).count
   end
+
+  # outline: whether 'no_loop function' works
+  # expected value: registerd 1 datas
+  #                 registerd ["北海道"]
+  test "no_loop" do
+    Pokotarou.execute("test/data/basic/no_loop.yml")
+    assert_equal 1, Pref.all.count
+    assert_equal 1, Pref.where(name: "北海道").count
+  end 
 end

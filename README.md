@@ -447,3 +447,17 @@ Default:
 ```ruby
 ["", nil, nil]
 ```
+
+#### Omitted loop
+If you want to register the test data at once, I suggest ommited loop
+
+```yml
+Default:
+  Pref: 
+    col:
+      name: ["Hokkaido"]
+```
+
+```ruby
+["Hokkaido"]
+```
