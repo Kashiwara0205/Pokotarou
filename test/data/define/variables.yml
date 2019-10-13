@@ -1,0 +1,9 @@
+const':
+  pref_loop: 3 
+  pref_name: ["北海道", "青森県", "岩手県"]
+
+Default:
+  Pref: 
+    loop: <const[:pref_loop]>
+    col:
+      name: <const[:pref_name]>
