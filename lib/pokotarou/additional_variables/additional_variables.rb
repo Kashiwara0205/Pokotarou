@@ -7,6 +7,12 @@ module AdditionalVariables
     def import data
       return unless data.has_key?(CONST_KEY)
       @const = data[CONST_KEY]
+
+      # parse expression configlation
+      @const.each do |key, val|
+        @const[key] = ConstExpressionParser.parse(val, maked = nil)
+      end
+
       data.delete(CONST_KEY)
     end
 
