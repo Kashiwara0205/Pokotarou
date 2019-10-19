@@ -73,6 +73,39 @@ end
 # for const variables
 class ConstExpressionParser
   class << self
+    def parse config_val
+      begin
+        case
+        when config_val.instance_of?(Array)
+          return config_val
+        when is_foreign_key?(config_val)
+          # remove 'F|'
+          str_model = config_val.sub(FOREIGN_KEY_SYMBOL, "")
+          model = eval(str_model)
+          return model.pluck(:id)
+        when is_expression?(config_val)
+          # remove '<>'
+          expression = config_val.strip[1..-2]
+          require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+          return self.parse(eval(expression))
+        else
+          if config_val.instance_of?(String)
+            # escape \\
+            config_val.tr("\\","")
+          else
+            config_val
+          end
+        end
+      rescue => e
+        ParseError.new("Failed Const Expression parse:#{e.message}")
+      end
+    end
+  end
+end
+
+# for return variables
+class ReturnExpressionParser
+  class << self
     def parse config_val, maked
       begin
         case
@@ -86,6 +119,7 @@ class ConstExpressionParser
         when is_expression?(config_val)
           # remove '<>'
           expression = config_val.strip[1..-2]
+          require AdditionalVariables.filepath if AdditionalVariables.const.present?
           require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
           return self.parse(eval(expression), maked)
         else

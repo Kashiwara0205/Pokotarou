@@ -10,7 +10,7 @@ module AdditionalVariables
 
       # parse expression configlation
       @const.each do |key, val|
-        @const[key] = ConstExpressionParser.parse(val, maked = nil)
+        @const[key] = ConstExpressionParser.parse(val)
       end
 
       data.delete(CONST_KEY)

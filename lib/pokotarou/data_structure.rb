@@ -4,9 +4,13 @@ class DataStructure
       # return data structure bellow
       # [{ block_name => { model_name => { column_configration }}}, ...]
       data.reduce(Hash.new) do |acc, r|
-        # r.first is block_name
-        # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
-        acc[r.first] = gen_structure(r.second)
+        if is_dush?(r.first.to_s)
+          acc[r.first] = r.second
+        else
+          # r.first is block_name
+          # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
+          acc[r.first] = gen_structure(r.second)
+        end
 
         acc
       end
@@ -83,6 +87,12 @@ class DataStructure
     def is_enum? val
       return false unless val.kind_of?(String)
       ENUM =~ val
+    end
+
+    DUSH_OPTION = /^.*\'$/
+    def is_dush? val
+      return false unless val.kind_of?(String)
+      DUSH_OPTION =~ val
     end
   end
 end

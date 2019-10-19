@@ -40,7 +40,6 @@ module Pokotarou
       AdditionalVariables.import(contents)
     end
 
-
     def load_file filepath
       case File.extname(filepath)
       when ".yml"
