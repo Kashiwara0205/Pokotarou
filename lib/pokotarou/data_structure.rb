@@ -1,6 +1,7 @@
 class DataStructure
   class << self
     def gen data
+      execute_template_option_setting(data)
       # return data structure bellow
       # [{ block_name => { model_name => { column_configration }}}, ...]
       data.reduce(Hash.new) do |acc, r|
@@ -16,6 +17,36 @@ class DataStructure
 
     private
 
+    def execute_template_option_setting data
+      return unless data.has_key?(:"template'")
+      templates = data[:"template'"]
+      data.delete(:"template'")
+      data.each do |_, val|
+        set_template_option(val, templates)
+      end
+    end
+
+    def set_template_option model_data, templates
+      model_data.each do |key, val|
+        next unless has_template?(val)
+        template_name = val[:template]
+        template = templates[template_name.to_sym]
+        apply_template_option(val, template)
+      end
+    end
+
+    def apply_template_option config_data, template
+      template.each do |key, val|
+        if val.kind_of?(Hash)
+          config_data[key] ||= Hash.new
+          apply_template_option(config_data[key], val)
+        else
+
+          config_data[key] ||= val
+        end
+      end
+    end
+
     def set_reshape_data_to_acc acc, r
       execute_grouping_option_setting(r.second)
       # r.first is block_name
@@ -25,22 +56,22 @@ class DataStructure
 
     def execute_grouping_option_setting model_data
       model_data.each do |key, val|
-        if has_grouping?(val)
-          set_grouping_option(val)
-        end
+        set_grouping_option(val) if has_grouping?(val)
       end
     end
 
     def set_grouping_option val
       val[:grouping].each do |grouping_key, cols|
-        expand_grouping_col(:col, val, grouping_key, cols)
-        expand_grouping_col(:option, val, grouping_key, cols)
+        apply_grouping_col(:col, val, grouping_key, cols)
+        apply_grouping_col(:option, val, grouping_key, cols)
+        apply_grouping_col(:convert, val, grouping_key, cols)
       end
 
       val.delete(:grouping)
     end
 
-    def expand_grouping_col config_name, val, grouping_key, cols
+    def apply_grouping_col config_name, val, grouping_key, cols
+      return if val[config_name].blank?
       return unless val[config_name].has_key?(grouping_key)
       cols.each do |e|
         val[config_name][e.to_sym] = val[config_name][grouping_key]
@@ -127,7 +158,12 @@ class DataStructure
     end
     
     def has_grouping? config_data
+      return false if config_data.blank?
       config_data.has_key?(:grouping)
+    end
+
+    def has_template? config_data
+      config_data.has_key?(:template)
     end
   end
 end

@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class Pokotarou::BasicTest < ActiveSupport::TestCase
+
   def setup
     # reset import method dataes
     Pokotarou.reset
