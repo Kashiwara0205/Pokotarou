@@ -208,4 +208,26 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal 1, Pref.all.count
     assert_equal 1, Pref.where(name: "北海道").count
   end 
+
+  # outline: whether 'grouping(basic)function' works
+  # expected value: registerd 1 dates
+  #                 text_test: hogehoge_0
+  #                 string_test: hogehoge_0
+  test "grouping(basic)" do
+    Pokotarou.execute("test/data/basic/grouping/basic.yml")
+    assert_equal 1, TestModel.all.count
+    assert_equal "hogehoge_0", TestModel.first.text_test
+    assert_equal "hogehoge_0", TestModel.first.string_test
+  end
+
+  # outline: whether 'grouping(expression)function' works
+  # expected value: registerd 1 dates
+  #                 text_test: fugafuga!_0
+  #                 string_test: fugafuga!_0
+  test "grouping(expression)" do
+    Pokotarou.execute("test/data/basic/grouping/expression.yml")
+    assert_equal 1, TestModel.all.count
+    assert_equal "fugafuga!_0", TestModel.first.text_test
+    assert_equal "fugafuga!_0", TestModel.first.string_test
+  end 
 end

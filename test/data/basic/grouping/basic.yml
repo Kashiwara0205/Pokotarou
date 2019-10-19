@@ -1,0 +1,8 @@
+Default:
+  TestModel:
+    grouping: 
+      a: ["text_test", "string_test"]
+    col:
+      a: hogehoge
+    option:
+      a: ["add_id"]

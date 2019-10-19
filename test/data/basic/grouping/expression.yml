@@ -1,0 +1,8 @@
+Default:
+  TestModel:
+    grouping: 
+      g_str: ["text_test", "string_test"]
+    col:
+      g_str: <['fugafuga!']>
+    option:
+      g_str: ["add_id"]

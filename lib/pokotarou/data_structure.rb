@@ -7,9 +7,7 @@ class DataStructure
         if is_dush?(r.first.to_s)
           acc[r.first] = r.second
         else
-          # r.first is block_name
-          # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
-          acc[r.first] = gen_structure(r.second)
+          set_reshape_data_to_acc(acc, r)
         end
 
         acc
@@ -17,6 +15,39 @@ class DataStructure
     end
 
     private
+
+    def set_reshape_data_to_acc acc, r
+      execute_grouping_option_setting(r.second)
+      # r.first is block_name
+      # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
+      acc[r.first] = gen_structure(r.second)
+    end
+
+    def execute_grouping_option_setting model_data
+      model_data.each do |key, val|
+        if has_grouping?(val)
+          set_grouping_option(val)
+        end
+      end
+    end
+
+    def set_grouping_option val
+      val[:grouping].each do |grouping_key, cols|
+        expand_grouping_col(:col, val, grouping_key, cols)
+        expand_grouping_col(:option, val, grouping_key, cols)
+      end
+
+      val.delete(:grouping)
+    end
+
+    def expand_grouping_col config_name, val, grouping_key, cols
+      return unless val[config_name].has_key?(grouping_key)
+      cols.each do |e|
+        val[config_name][e.to_sym] = val[config_name][grouping_key]
+      end
+    
+      val[config_name].delete(grouping_key)
+    end
 
     def gen_structure model_data
       model_data.reduce(Hash.new) do |acc, r|
@@ -93,6 +124,10 @@ class DataStructure
     def is_dush? val
       return false unless val.kind_of?(String)
       DUSH_OPTION =~ val
+    end
+    
+    def has_grouping? config_data
+      config_data.has_key?(:grouping)
     end
   end
 end
