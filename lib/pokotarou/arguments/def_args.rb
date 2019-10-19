@@ -1,0 +1,1 @@
+def args; Arguments.args end

@@ -1,5 +1,6 @@
 require "pokotarou/additional_methods.rb"
 require "pokotarou/additional_variables/additional_variables.rb"
+require "pokotarou/arguments/arguments.rb"
 class ParseError < StandardError; end
 FOREIGN_KEY_SYMBOL = "F|"
 
@@ -21,6 +22,7 @@ class ExpressionParser
           expression = config_val.strip[1..-2]
           require AdditionalVariables.filepath if AdditionalVariables.const.present?
           require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+          require Arguments.filepath if Arguments.filepath.present?
           return self.parse(eval(expression), maked)
         else
           if config_val.instance_of?(String)
@@ -59,6 +61,7 @@ class LoopExpressionParser
           expression = config_val.strip[1..-2]
           require AdditionalVariables.filepath if AdditionalVariables.const.present?
           require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+          require Arguments.filepath if Arguments.filepath.present?
           return self.parse(eval(expression), maked)
         else
           return 1
@@ -87,6 +90,7 @@ class ConstExpressionParser
           # remove '<>'
           expression = config_val.strip[1..-2]
           require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+          require Arguments.filepath if Arguments.filepath.present?
           return self.parse(eval(expression))
         else
           if config_val.instance_of?(String)
@@ -121,6 +125,7 @@ class ReturnExpressionParser
           expression = config_val.strip[1..-2]
           require AdditionalVariables.filepath if AdditionalVariables.const.present?
           require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+          require Arguments.filepath if Arguments.filepath.present?
           return self.parse(eval(expression), maked)
         else
           if config_val.instance_of?(String)

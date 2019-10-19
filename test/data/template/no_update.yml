@@ -4,7 +4,6 @@ template':
     col:
       pref_id: F|Pref
       name: ["hogeta", "fuga", "pokota"]
-
 Pref:
   Pref: 
     loop: 3

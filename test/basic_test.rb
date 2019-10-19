@@ -230,5 +230,17 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal 1, TestModel.all.count
     assert_equal "fugafuga!_0", TestModel.first.text_test
     assert_equal "fugafuga!_0", TestModel.first.string_test
-  end 
+  end
+
+  # outline: whether 'args function' works
+  # expected value: registerd 3 datas
+  #                 registerd ["北海道", "青森県", "岩手県"]
+  test "args" do
+    Pokotarou.set_args({ name: ["北海道", "青森県", "岩手県"] })
+    Pokotarou.execute("test/data/basic/args.yml")
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.where(name: "北海道").present?
+    assert_equal true, Pref.where(name: "青森県").present?
+    assert_equal true, Pref.where(name: "岩手県").present?
+  end
 end

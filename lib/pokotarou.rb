@@ -20,8 +20,13 @@ module Pokotarou
       AdditionalMethods.import(filepath)
     end
 
+    def set_args hash
+      Arguments.import(hash)
+    end
+
     def reset
       AdditionalMethods.remove()
+      Arguments.remove()
     end
 
     def gen_handler filepath
