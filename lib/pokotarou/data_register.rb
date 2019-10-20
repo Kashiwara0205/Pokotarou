@@ -145,7 +145,7 @@ class DataRegister
     def set_expand_expression config_data, key, val, maked
       # if it exists type, there is no need for doing 'expand expression'
       return if config_data[:type][key].present?
-      config_data[:col][key] = ExpressionParser.parse(val, maked)
+      config_data[:col][key] = SeedExpressionParser.parse(val, maked)
     end
 
     def set_loop_expand_expression config_data, maked
