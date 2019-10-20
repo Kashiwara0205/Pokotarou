@@ -1,0 +1,17 @@
+template':
+  pref_template:
+    loop: 3
+    col:
+      pref_id: F|Pref
+      name: ["hogeta", "fuga", "pokota"]
+Pref:
+  Pref: 
+    loop: 3
+    col:
+      name: ['北海道', '青森県', '岩手県']
+  Member:
+    template: pref_template
+    loop: 4
+    col:
+      pref_id: F|Pref
+      name: ["hogeta", "fuga", "pokota", "samurai"]

@@ -11,12 +11,15 @@ class DataRegister
       ActiveRecord::Base.transaction do
         begin
           data.each do |sym_block, model_data|
+            next if is_dush?(sym_block.to_s)
             regist_models(sym_block, model_data, maked, model_cache)
           end
         rescue => e
           raise StandardError.new("#{e.message}")
         end
       end
+
+      ReturnExpressionParser.parse(data[:"return'"], maked) 
     end
 
     private
@@ -142,7 +145,7 @@ class DataRegister
     def set_expand_expression config_data, key, val, maked
       # if it exists type, there is no need for doing 'expand expression'
       return if config_data[:type][key].present?
-      config_data[:col][key] = ExpressionParser.parse(val, maked)
+      config_data[:col][key] = SeedExpressionParser.parse(val, maked)
     end
 
     def set_loop_expand_expression config_data, maked
@@ -170,5 +173,10 @@ class DataRegister
       puts log
     end
 
+    DUSH_OPTION = /^.*\'$/
+    def is_dush? val
+      return false unless val.kind_of?(String)
+      DUSH_OPTION =~ val
+    end
   end
 end

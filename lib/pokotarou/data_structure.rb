@@ -1,18 +1,84 @@
 class DataStructure
   class << self
     def gen data
+      execute_template_option_setting(data)
       # return data structure bellow
       # [{ block_name => { model_name => { column_configration }}}, ...]
       data.reduce(Hash.new) do |acc, r|
-        # r.first is block_name
-        # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
-        acc[r.first] = gen_structure(r.second)
+        if is_dush?(r.first.to_s)
+          acc[r.first] = r.second
+        else
+          set_reshape_data_to_acc(acc, r)
+        end
 
         acc
       end
     end
 
     private
+
+    def execute_template_option_setting data
+      return unless data.has_key?(:"template'")
+      templates = data[:"template'"]
+      data.delete(:"template'")
+      data.each do |_, val|
+        set_template_option(val, templates)
+      end
+    end
+
+    def set_template_option model_data, templates
+      model_data.each do |key, val|
+        next unless has_template?(val)
+        template_name = val[:template]
+        template = templates[template_name.to_sym]
+        apply_template_option(val, template)
+      end
+    end
+
+    def apply_template_option config_data, template
+      template.each do |key, val|
+        if val.kind_of?(Hash)
+          config_data[key] ||= Hash.new
+          apply_template_option(config_data[key], val)
+        else
+
+          config_data[key] ||= val
+        end
+      end
+    end
+
+    def set_reshape_data_to_acc acc, r
+      execute_grouping_option_setting(r.second)
+      # r.first is block_name
+      # r.second is model_data, like { Pref: {loop: 3}, Member: {loop: 3}... }
+      acc[r.first] = gen_structure(r.second)
+    end
+
+    def execute_grouping_option_setting model_data
+      model_data.each do |key, val|
+        set_grouping_option(val) if has_grouping?(val)
+      end
+    end
+
+    def set_grouping_option val
+      val[:grouping].each do |grouping_key, cols|
+        apply_grouping_col(:col, val, grouping_key, cols)
+        apply_grouping_col(:option, val, grouping_key, cols)
+        apply_grouping_col(:convert, val, grouping_key, cols)
+      end
+
+      val.delete(:grouping)
+    end
+
+    def apply_grouping_col config_name, val, grouping_key, cols
+      return if val[config_name].blank?
+      return unless val[config_name].has_key?(grouping_key)
+      cols.each do |e|
+        val[config_name][e.to_sym] = val[config_name][grouping_key]
+      end
+    
+      val[config_name].delete(grouping_key)
+    end
 
     def gen_structure model_data
       model_data.reduce(Hash.new) do |acc, r|
@@ -83,6 +149,21 @@ class DataStructure
     def is_enum? val
       return false unless val.kind_of?(String)
       ENUM =~ val
+    end
+
+    DUSH_OPTION = /^.*\'$/
+    def is_dush? val
+      return false unless val.kind_of?(String)
+      DUSH_OPTION =~ val
+    end
+    
+    def has_grouping? config_data
+      return false if config_data.blank?
+      config_data.has_key?(:grouping)
+    end
+
+    def has_template? config_data
+      config_data.has_key?(:template)
     end
   end
 end

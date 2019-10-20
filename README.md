@@ -45,7 +45,9 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Usage
 
-Set following configration_file in somewhere.
+Following yml file become seed data.
+
+Please make following yml file in your favorite dir.
 
 ```yml
 Default:
@@ -53,25 +55,24 @@ Default:
     loop: 3
 ```
 
-execute the following ruby code in seeds.rb.
+and write following ruby code in seeds.rb.
 
 ```ruby
 Pokotarou.execute("./config_filepath")
 ```
 
-run rails db:seed
+when you finished writing, then run rails db:seed
 
 ```bash
 $ rails db:seed
 ```
 
-finish
+As a result, seed data is registerd your db.
 
-### Configration file
+## How to set configlation file(.yml)?
+explain how to write the configuration file below.
 
-Introduce how to write config file
-
-#### Model used for explanation
+### Model used for explanation
 Table name below is 'prefs' and model name is 'Pref'
 
 |Field|Type|NULL|
@@ -95,12 +96,14 @@ Table name below is 'members' and model name is 'Member'
 |updated_at|datetime|NO|
 
 
-#### Basic
-If there is no column definition, prepared data is registerd.
+### Standerd Setting
+The basic setting method is written below
 
-Registered 3 times in the following cases.
+#### Automatic data entry
 
-and id column is basically registerd by autoincrement.
+If there is no definition about col, then automatically prepared data is registrd.
+
+For example, in the case of below, it is registered automatically prepared data three times.
 
 ```yml
 Default:
@@ -108,14 +111,27 @@ Default:
     loop: 3
 ```
 
-Also you can set seed_data by yourself.
-
+also you can set seed_data by yourself.
 ```yml
 Default:
   Pref:
     loop: 3
     col:
       name: "Hokkaido"
+```
+
+#### Omitted loop
+If you want to register the test data at once, I suggest ommited loop
+
+```yml
+Default:
+  Pref: 
+    col:
+      name: ["Hokkaido"]
+```
+
+```ruby
+["Hokkaido"]
 ```
 
 #### Array
@@ -131,12 +147,11 @@ Default:
       name: ["Hokkaido", "Aomori", "Iwate"]
 ```
 
-#### Maked data
+#### Maked function
 'maked' is very useful function.
+it is hash and accumulate data created in the past. 
 
-Registration is possible using registerd data
-
-Use maked in different model area in the following cases.
+For example, in the case of below, reffer name of Pref in Default block by maked 
 
 ```yml
 Default:
@@ -144,39 +159,6 @@ Default:
     loop: 2
     col:
       name: ["Hokkaido", "Aomori"]
-  Member:
-    loop: 2
-    col:
-      name: <maked[:Default][:Pref][:name]>
-      pref_id: F|Pref
-```
-
-Use maked in same model area in the following cases.
-
-```yml
-Default:
-  Pref:
-    loop: 3
-    col:
-      name: ["Hokkaido", "Aomori", "Iwate"]
-  Member:
-    loop: 3
-    col:
-      name: ["Tarou", "Jirou", "Saburou"]
-      remarks: <maked[:Default][:Member][:name]>
-      pref_id: F|Pref
-
-```
-
-Use maked in diffrent block area in the following cases.
-
-```yml
-Default:
-  Pref: 
-    loop: 2
-    col:
-      name: ["Hokkaido", "Aomori"]
-Default2:
   Member:
     loop: 2
     col:
@@ -188,9 +170,9 @@ Default2:
 
 **※ If you set association(belongs_to, has_many...), Pokotarou automatically register foreign keys**
 
-' F| ' means foreign key.
+' F| ' means foreign key. 'F|' is Model.all.pluck(:id)
 
-In the following source code, id of Pref is registerd with Member
+For example, in the case of below, Member model record is registerd with pref_id(foregin key).
 
 ```yml
 Default:
@@ -205,9 +187,8 @@ Default:
 ```
 
 #### Expression expansion
-'< >' means expression expansion
-
-You can run ruby code in '< >'
+'< >' means expression expansion.
+You can run ruby code in '< >'.
 
 ```yml
 Default:
@@ -218,7 +199,7 @@ Default:
       created_at: <Date.parse('1997/02/05')>
 ```
 
-#### Add method
+#### Additional method
 You can add method and use it in pokotarou
 
 ```yml
@@ -237,17 +218,18 @@ def pref_name
 end
 ```
 
-and execute the following source code in seeds.rb.
+and run the following code in seeds.rb.
 
 ```ruby
 Pokotarou.import("./method_filepath")
 Pokotarou.execute("./config_filepath")
 ```
 
+As as result, pokotarou can call pref_name method, and seed data is registrd by pref_name method.
 
-#### Use multiple blocks
+#### Multiple blocks
 
-Registration is possible using two blocks
+You can use multiple blocks.
 
 ```yml
 Default:
@@ -268,6 +250,10 @@ Fuga:
   Pref:
     loop: 3
 ```
+
+### option
+Option is useful function.
+If you can master it, it may be easier to create test data.
 
 #### Random
 Shuffle seed data when regist
@@ -324,6 +310,9 @@ The following results change from run to run
 ["Hokkaido_0", "Iwate_1", "Hokkaido_2"]
 ```
 
+### Advanced Setting
+The advanced setting method is written below
+
 #### Validation
 
 Run validation when regist
@@ -352,7 +341,10 @@ Default:
 
 #### Pokotarou Handler
 
-if you use Pokotarou handler, can update pokotarou's parameter
+If you want to use configlation yml data in ruby code then you can use "PokotarouHandler"
+
+When you use "PokotarouHandler", can update pokotarou's parameter
+in ruby code.
 
 
 <b>Change Operation</b>
@@ -405,9 +397,113 @@ In the following example, delete col config
   Pokotarou.execute(handler.get_data)
 ```
 
-#### Convert seed data
+#### Const
+You can set const variables by const' key.
 
-You can convert seed data
+```yml
+const':
+  name: "hoge"
+Default:
+  Pref:
+    loop: 3
+  col:
+    name: <const[:name]>
+```
+
+#### Grouping
+Grouping is very useful function.
+Especially useful when setting multiple options.
+
+
+```yml
+Default:
+  Member:
+    grouping: 
+      # set columns you want to group
+      hoge_g: ["name", "remark"]
+    col:
+      # you can use "hoge_g" at col
+      hoge_g: <['fugafuga!']>
+    option:
+      # also you can use "hoge_g" at option
+      hoge_g: ["add_id"]
+
+```
+
+#### Template
+You can set template config by template' key.
+
+The template can be overwritten with the one set later.
+
+```yml
+template':
+  pref_template:
+    loop: 3
+    col:
+      pref_id: F|Pref
+      name: ["hogeta", "fuga", "pokota"]
+Pref:
+  Pref: 
+    loop: 3
+    col:
+      name: ["Hokkaido", "Aomori", "Iwate"]
+
+Member1:
+  Member:
+    template: pref_template
+  
+Member2:
+  Member:
+    template: pref_template
+    col:
+      name: ["hogeta2", "fuga2", "pokota2"]
+```
+
+#### Return 
+You can set return val by return' key.
+
+```yml
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["Hokkaido", "Aomori", "Iwate"]
+
+return': <maked[:Default][:Pref][:name]>
+
+```
+
+```ruby
+ return_val = Pokotarou.execute("filepath")
+ puts return_val
+```
+
+result
+```
+Hokkaido
+Aomori
+Iwate
+```
+#### Args
+
+You can set args by hash.
+
+```yml
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: <args[:name]>
+```
+```ruby
+  Pokotarou.set_args({ name:  ["Hokkaido", "Aomori", "Iwate"] })
+  Pokotarou.execute("filepath")
+```
+
+### Convert
+convert is a convenient function. Will convert the seed data.
+
+#### convert option
 
 |convert   |description                               |
 |:---------|------------------------------------------|
@@ -432,7 +528,7 @@ Default:
 [nil, nil, nil]
 ```
 
-complex version
+a little complex version
 
 ```yml
 Default:
@@ -446,18 +542,4 @@ Default:
 
 ```ruby
 ["", nil, nil]
-```
-
-#### Omitted loop
-If you want to register the test data at once, I suggest ommited loop
-
-```yml
-Default:
-  Pref: 
-    col:
-      name: ["Hokkaido"]
-```
-
-```ruby
-["Hokkaido"]
 ```
