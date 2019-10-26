@@ -11,3 +11,14 @@ def convert_name_to_birthday name
 
   name.map{|m| convert_list[m]}
 end
+
+
+def convert_pref_to_test pref_name
+  convert_list = {
+    "北海道" => "A",
+    "青森県" => "B",
+    "岩手県" => "C"
+  }
+
+  pref_name.map{|m| convert_list[m]}
+end

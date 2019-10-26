@@ -1,0 +1,16 @@
+template':
+  pref_template:
+    loop: 3
+    col:
+      pref_id: F|Pref
+      name: <maked[:Pref][:Pref][:name]>
+      remarks: <convert_pref_to_test(maked[:Member1][:Member][:name])>
+Pref:
+  Pref: 
+    loop: 3
+    col:
+      name: ['北海道', '青森県', '岩手県']
+
+Member1:
+  Member:
+    template: pref_template

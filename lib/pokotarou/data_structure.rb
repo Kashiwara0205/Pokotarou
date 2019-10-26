@@ -31,18 +31,24 @@ class DataStructure
         next unless has_template?(val)
         template_name = val[:template]
         template = templates[template_name.to_sym]
-        apply_template_option(val, template)
+        copy_template = template.deep_dup
+        # when a new key is generated, it is added behind
+        # so, overwrite config_data to template first
+
+        # from val to copy_template
+        deep_overwrite(val, copy_template)
+        # update config data
+        model_data[key] = copy_template
       end
     end
 
-    def apply_template_option config_data, template
-      template.each do |key, val|
+    def deep_overwrite from_hash, to_hash
+      from_hash.each do |key, val|
         if val.kind_of?(Hash)
-          config_data[key] ||= Hash.new
-          apply_template_option(config_data[key], val)
+          to_hash[key] ||= Hash.new
+          deep_overwrite(val, to_hash[key])
         else
-
-          config_data[key] ||= val
+          to_hash[key] = val
         end
       end
     end
