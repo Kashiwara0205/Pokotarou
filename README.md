@@ -23,6 +23,10 @@ If it is the following table, 10,000 records can regist in 0.41s on average
 |created_at|datetime|NO|
 |updated_at|datetime|NO|
 
+Thanks to ActiveRecordImport
+
+
+
 ## Getting started
 Add this line to your application's Gemfile:
 
