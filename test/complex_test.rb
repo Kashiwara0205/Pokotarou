@@ -11,4 +11,16 @@ class Pokotarou::ComplexTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "青森県_1").present?
     assert_equal true, Pref.where(name: "岩手県_2").present?
   end
+
+  # outline: whether works when set all dush str
+  # expected value: registerd 3 datas
+  #                 registerd 3 name datas(["hogeta", "fuga", "pokota"])
+  test "set all dush str" do
+    res = Pokotarou.execute("test/data/complex/all_dush_str.yml")
+    assert_equal 1, res
+    assert_equal 3, Member.all.count
+    assert Member.find_by(name: "hogeta").present?
+    assert Member.find_by(name: "fuga").present?
+    assert Member.find_by(name: "pokota").present?
+  end
 end

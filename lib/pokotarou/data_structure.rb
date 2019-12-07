@@ -21,7 +21,8 @@ class DataStructure
       return unless data.has_key?(:"template'")
       templates = data[:"template'"]
       data.delete(:"template'")
-      data.each do |_, val|
+      data.each do |key, val|
+        next if is_dush?(key.to_s)
         set_template_option(val, templates)
       end
     end
