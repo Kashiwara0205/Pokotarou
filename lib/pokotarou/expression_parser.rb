@@ -81,7 +81,48 @@ end
 # for seed data
 class SeedExpressionParser < ExpressionParser
   class << self
+
+    def parse config_val, maked = nil, autoincrement_id_hash
+      begin
+        case
+        # Array
+        when is_array?(config_val)
+          array_procees(config_val)
+
+        # ForeignKey
+        when is_foreign_key?(config_val)
+          foreign_key_process(config_val, autoincrement_id_hash)
+
+        # Expression
+        when is_expression?(config_val)
+          expression_process(config_val, maked)
+
+        # Integer
+        when is_integer?(config_val)
+          integer_process(config_val)
+
+        # Nil
+        when is_nil?(config_val)
+          nil_process(config_val)
+
+        # Other
+        else
+          nothing_apply_process(config_val)
+        end
+      rescue => e
+        output_error(e)
+      end
+    end
+
     private
+    def foreign_key_process val, autoincrement_id_hash
+      # remove 'F|'
+      str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
+      model = eval(str_model)
+      ids = model.pluck(:id)
+      return ids.size.zero? ? autoincrement_id_hash[str_model.to_sym] : ids
+    end
+
     def nothing_apply_process val
       # for escape \\
       val.instance_of?(String) ? [val.tr("\\","")] : [val]
@@ -106,16 +147,49 @@ end
 # for loop data
 class LoopExpressionParser < ExpressionParser
   class << self
+    def parse config_val, maked = nil, autoincrement_id_hash
+      begin
+        case
+        # Array
+        when is_array?(config_val)
+          array_procees(config_val)
+
+        # ForeignKey
+        when is_foreign_key?(config_val)
+          foreign_key_process(config_val, autoincrement_id_hash)
+
+        # Expression
+        when is_expression?(config_val)
+          expression_process(config_val, maked)
+
+        # Integer
+        when is_integer?(config_val)
+          integer_process(config_val)
+
+        # Nil
+        when is_nil?(config_val)
+          nil_process(config_val)
+
+        # Other
+        else
+          nothing_apply_process(config_val)
+        end
+      rescue => e
+        output_error(e)
+      end
+    end
+
     private
     def array_procees val
       val.size
     end
 
-    def foreign_key_process val
+    def foreign_key_process val, autoincrement_id_hash
       # remove 'F|'
       str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
       model = eval(str_model)
-      return model.pluck(:id).size
+      ids = model.pluck(:id)
+      return ids.size.zero? ? autoincrement_id_hash[str_model.to_sym].size : ids.size
     end
 
     def integer_process val

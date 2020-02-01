@@ -122,9 +122,11 @@ class DataStructure
           end
 
           # set foreign_key info
-          config_data[:foreign_key] ||= Hash.new
           if is_foreign_key?(symbol_col_name, foreign_key_data)
-            config_data[:foreign_key][symbol_col_name] = foreign_key_data[symbol_col_name]
+            # delete type val for don't run default seeder
+            config_data[:type].delete(symbol_col_name)
+            # use F function for set foreign key
+            config_data[:col][symbol_col_name] = "F|#{foreign_key_data[symbol_col_name].to_s}"
           end
         end
 

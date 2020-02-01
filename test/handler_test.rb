@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class Pokotarou::HandlerTest < ActiveSupport::TestCase
-
   # outline: whether 'pokotarou handler delete_block' works
   # expected value: registerd 3 datas
   test "pokotarou handler(delete_block)" do

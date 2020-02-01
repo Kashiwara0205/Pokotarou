@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class Pokotarou::ReturnTest < ActiveSupport::TestCase
-
   # outline: whether 'add_id' works
   # expected value: return vale ["北海道", "青森県", "岩手県"]
   test "return" do

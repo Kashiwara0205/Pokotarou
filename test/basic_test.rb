@@ -183,7 +183,6 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "青森県").present?
     assert_equal true, Pref.where(name: "岩手県").present?
   end
-
   # outline: whether 'automatic foreign key' works
   # expected value: registerd 6 datas(pref: 3, member: 3)
   test "automatic foreign_key" do
