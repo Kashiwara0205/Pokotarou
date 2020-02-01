@@ -9,12 +9,12 @@ class DataRegister
       maked = Hash.new
       # init model_data to cache data of model
       model_cache = Hash.new
-      autoincrement_id_hash = Hash.new
+      id_info = Hash.new
       ActiveRecord::Base.transaction do
         begin
           data.each do |sym_block, model_data|
             next if is_dush?(sym_block.to_s)
-            setting_register_val_for_bulk(sym_block, model_data, maked, model_cache, autoincrement_id_hash)
+            setting_register_val_for_bulk(sym_block, model_data, maked, model_cache, id_info)
           end
           bulk_hash = merge_block(data)
           register_by_bulk(bulk_hash, model_cache)
@@ -55,7 +55,7 @@ class DataRegister
       end
     end
 
-    def setting_register_val_for_bulk sym_block, model_data, maked, model_cache, autoincrement_id_hash
+    def setting_register_val_for_bulk sym_block, model_data, maked, model_cache, id_info
       begin
         model_data.each do |e|
           str_model = e.first.to_s
@@ -66,15 +66,12 @@ class DataRegister
 
           # model_data.values is config_data
           config_data = e.second
-          # col_arr: [:col1, :col2, :col3]
-          col_arr = config_data[:col].keys
-
           # set expand expression for loop '<>' and ':' and so on...
-          set_loop_expand_expression(config_data, maked, autoincrement_id_hash)
+          set_loop_expand_expression(config_data, maked, id_info)
           # if there is no setting data, set default seed data
           set_default_seed(config_data)
           # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
-          set_seed_arr(model, sym_block, sym_model, config_data, maked, autoincrement_id_hash)
+          set_seed_arr(model, sym_block, sym_model, config_data, maked, id_info)
 
           output_log(config_data[:log]) 
         end
@@ -135,21 +132,23 @@ class DataRegister
       end
     end
     
-    def set_seed_arr model, sym_block, sym_model, config_data, maked, autoincrement_id_hash
+    def set_seed_arr model, sym_block, sym_model, config_data, maked, id_info
       options = config_data[:option]
       convert_conf = config_data[:convert]
       loop_size = config_data[:loop]
 
       if apply_autoincrement?(config_data[:autoincrement])
-        set_autoincrement(config_data, model, loop_size, autoincrement_id_hash[sym_model])
-        # update_latest_id
-        autoincrement_id_hash[sym_model] = config_data[:col][:id]
+        set_autoincrement(config_data, model, loop_size, id_info[sym_model])
+      end
+
+      if config_data[:col].has_key?(:id)
+        update_id_info(id_info, sym_model, config_data[:col][:id])
       end
 
       config_data[:col].each do |key, val|
         begin 
           # set expand expression '<>' and ':' and so on...
-          set_expand_expression(config_data, key, val, maked, autoincrement_id_hash)
+          set_expand_expression(config_data, key, val, maked, id_info)
           expanded_val = config_data[:col][key]
           expanded_val_size = expanded_val.size
 
@@ -209,15 +208,15 @@ class DataRegister
       config_data[:col][:id] = [*next_id..additions]
     end
 
-    def set_expand_expression config_data, key, val, maked, autoincrement_id_hash
+    def set_expand_expression config_data, key, val, maked, id_info
       # if it exists type, there is no need for doing 'expand expression'
       return if config_data[:type][key].present?
-      config_data[:col][key] = SeedExpressionParser.parse(val, maked, autoincrement_id_hash)
+      config_data[:col][key] = SeedExpressionParser.parse(val, maked, id_info)
     end
 
-    def set_loop_expand_expression config_data, maked, autoincrement_id_hash
+    def set_loop_expand_expression config_data, maked, id_info
       config_data[:loop] = 
-        LoopExpressionParser.parse(config_data[:loop], maked, autoincrement_id_hash)  
+        LoopExpressionParser.parse(config_data[:loop], maked, id_info)  
     end
 
     def get_seed arr, size, cnt
@@ -233,6 +232,13 @@ class DataRegister
       maked[sym_block] ||= Hash.new
       maked[sym_block][sym_model] ||= Hash.new
       maked[sym_block][sym_model][col] = seed
+    end
+
+    def update_id_info id_info, sym_model, id_arr
+      id_info[sym_model] ||= []
+      id_info[sym_model].concat(id_arr)
+
+      id_info
     end
 
     def output_log log

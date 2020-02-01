@@ -242,4 +242,39 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "青森県").present?
     assert_equal true, Pref.where(name: "岩手県").present?
   end
+
+  # outline: whether multiple foreign_key works
+  # expected value: registerd 9 datas
+  #                 registerd [1, 2, 3, 100, 101, 102, 103, 104, 105]
+  test "should register expected foregin_key values" do 
+    Pokotarou.set_args({ name: ["北海道", "青森県", "岩手県"] })
+    Pokotarou.execute("test/data/basic/mutliple_foreign_key_from_model.yml")
+    
+    assert_equal 9, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(pref_id: 100).present?
+    assert_equal true, Member.find_by(pref_id: 101).present?
+    assert_equal true, Member.find_by(pref_id: 102).present?
+    assert_equal true, Member.find_by(pref_id: 103).present?
+    assert_equal true, Member.find_by(pref_id: 104).present?
+    assert_equal true, Member.find_by(pref_id: 105).present?
+  end
+
+  # outline: whether register expected foreign_key values by 2 files
+  # expected value: registerd 6 datas
+  #                 registerd [1, 2, 3, 4, 5, 6]
+  test "should register expected foreign_key values by 2 files" do 
+    Pokotarou.execute("test/data/basic/two_file/foreign_key/register_pref.yml")
+    Pokotarou.execute("test/data/basic/two_file/foreign_key/register_member.yml")
+
+    assert_equal 6, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(pref_id: 4).present?
+    assert_equal true, Member.find_by(pref_id: 5).present?
+    assert_equal true, Member.find_by(pref_id: 6).present?
+  end
 end

@@ -82,7 +82,7 @@ end
 class SeedExpressionParser < ExpressionParser
   class << self
 
-    def parse config_val, maked = nil, autoincrement_id_hash
+    def parse config_val, maked = nil, id_info
       begin
         case
         # Array
@@ -91,7 +91,7 @@ class SeedExpressionParser < ExpressionParser
 
         # ForeignKey
         when is_foreign_key?(config_val)
-          foreign_key_process(config_val, autoincrement_id_hash)
+          foreign_key_process(config_val, id_info)
 
         # Expression
         when is_expression?(config_val)
@@ -115,12 +115,12 @@ class SeedExpressionParser < ExpressionParser
     end
 
     private
-    def foreign_key_process val, autoincrement_id_hash
+    def foreign_key_process val, id_info
       # remove 'F|'
       str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
       model = eval(str_model)
       ids = model.pluck(:id)
-      return ids.size.zero? ? autoincrement_id_hash[str_model.to_sym] : ids
+      return ids.concat(id_info[str_model.to_sym])
     end
 
     def nothing_apply_process val
@@ -147,7 +147,7 @@ end
 # for loop data
 class LoopExpressionParser < ExpressionParser
   class << self
-    def parse config_val, maked = nil, autoincrement_id_hash
+    def parse config_val, maked = nil, id_info
       begin
         case
         # Array
@@ -156,7 +156,7 @@ class LoopExpressionParser < ExpressionParser
 
         # ForeignKey
         when is_foreign_key?(config_val)
-          foreign_key_process(config_val, autoincrement_id_hash)
+          foreign_key_process(config_val, id_info)
 
         # Expression
         when is_expression?(config_val)
@@ -184,12 +184,12 @@ class LoopExpressionParser < ExpressionParser
       val.size
     end
 
-    def foreign_key_process val, autoincrement_id_hash
+    def foreign_key_process val, id_info
       # remove 'F|'
       str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
       model = eval(str_model)
       ids = model.pluck(:id)
-      return ids.size.zero? ? autoincrement_id_hash[str_model.to_sym].size : ids.size
+      return ids.size.zero? ? id_info[str_model.to_sym].size : ( ids.size + id_info[str_model.to_sym].size)
     end
 
     def integer_process val
@@ -252,3 +252,27 @@ end
 def is_nil? val
   val.nil?
 end
+
+=begin
+def foreign_key_process2 val, maked
+  # remove 'F|'
+  str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
+  model = eval(str_model)
+  ids = model.pluck(:id)
+  return ids.concat(get_all_maked_elem(maked, str_model.to_sym, :id))
+end
+
+def get_all_maked_elem maked, sym_model, column
+  elem_arr = 
+    maked.reduce([]) do |acc, val|
+      config = val.second
+      if config.has_key?(sym_model)
+        acc.push(config[sym_model][column])
+      end
+
+      acc
+    end
+
+  elem_arr.flatten.compact
+end
+=end
