@@ -1,0 +1,12 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道", "青森県", "岩手県"]
+  Member: 
+    loop: 3
+    col:
+      name: ["Tarou", "Jirou", "Saburou"]
+      remarks: <maked_col[:Member][:name]>
+      birthday: <convert_name_to_birthday(maked_col[:Member][:name])>
+      pref_id: F|Pref

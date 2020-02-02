@@ -277,4 +277,45 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Member.find_by(pref_id: 5).present?
     assert_equal true, Member.find_by(pref_id: 6).present?
   end
+
+  # outline: whether 'maked_col function' works when use one time at same block
+  # expected value: registerd 2 datas
+  #                 registerd ["北海道", "青森県"]
+  test "should registr expected val by maked_col(once)" do
+    Pokotarou.execute("test/data/basic/maked_col/once.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.where(name: "北海道").present?
+    assert_equal true, Member.where(name: "青森県").present?
+  end
+
+  # outline: whether 'maked function' works when use at same model
+  # expected value: registerd 3 datas
+  #                 registerd ["Tarou", "Jirou", "Saburou"]
+  test "should registr expected val by maked_col(same model)" do
+    Pokotarou.import("./test/data/methods.rb")
+    Pokotarou.execute("test/data/basic/maked_col/same_model.yml")
+    assert_equal 3, Member.all.count
+
+    tarou = Member.find_by(name: "Tarou")
+    assert_equal "Tarou", tarou.remarks
+    assert_equal Date.parse('1997/02/05'), tarou.birthday
+
+    jirou = Member.find_by(name: "Jirou")
+    assert_equal "Jirou", jirou.remarks
+    assert_equal Date.parse('1997/02/04'), jirou.birthday
+
+    saburou = Member.find_by(name: "Saburou")
+    assert_equal "Saburou", saburou.remarks
+    assert_equal Date.parse('1997/02/03'), saburou.birthday
+  end
+
+  # outline: whether 'maked_col function' works when used other blocks
+  # expected value: registerd 3 datas
+  #                 registerd ["北海道", "青森"]
+  test "should registr expected val by maked_col(other blocks)" do
+    Pokotarou.execute("test/data/basic/maked_col/other_block.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.where(name: "北海道").present?
+    assert_equal true, Member.where(name: "青森県").present?
+  end
 end
