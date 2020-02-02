@@ -64,4 +64,21 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: "栃木県").present?
     assert_equal true, Pref.find_by(name: "沖縄県").present?
   end
+
+  # outline: whether 'pokotarou handler chaching function works
+  # expected value: registerd 9 datas
+  #                 registerd "茨城県" * 3, "栃木県" * 3, "沖縄県" * 3
+  test "pokotarou handler(chaching)" do
+    arr = [["茨城県"], ["栃木県"], ["沖縄県"]]
+    arr.each do |e|
+      handler = Pokotarou.gen_handler("test/data/handler/change_arr.yml")
+      handler.change_seed(:Default, :Pref, :name, e)
+      Pokotarou.execute(handler.get_data())
+    end
+
+    assert_equal 9, Pref.all.count
+    assert_equal 3, Pref.where(name: "茨城県").count
+    assert_equal 3, Pref.where(name: "栃木県").count
+    assert_equal 3, Pref.where(name: "沖縄県").count
+  end
 end

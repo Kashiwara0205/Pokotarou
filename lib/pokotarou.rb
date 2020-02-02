@@ -37,10 +37,17 @@ module Pokotarou
     def reset
       AdditionalMethods.remove()
       Arguments.remove()
+      @handler_chache = {}
     end
 
-    def gen_handler filepath
-      PokotarouHandler.new(gen_config(filepath))
+    def gen_handler filepath, cahce = true
+      if cahce
+        @handler_chache ||= {}
+        @handler_chache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
+        @handler_chache[filepath].deep_dup()
+      else
+        PokotarouHandler.new(gen_config(filepath))
+      end
     end
 
     private
