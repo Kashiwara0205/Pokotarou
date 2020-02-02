@@ -2,7 +2,7 @@ language: ruby
 services:
   - mysql
 rvm:
- - 2.5.0
+ - 2.6.0
 before_script:
   - "cp test/dummy/config/database_travis.yml test/dummy/config/database.yml"
 script:
