@@ -3,5 +3,5 @@ Default:
     loop: 3
     col:
       name: ["北海道", "青森県", "岩手県"]
-  Member:
-    loop: 3
+
+return': F|Pref

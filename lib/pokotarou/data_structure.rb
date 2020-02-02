@@ -4,7 +4,7 @@ class DataStructure
       execute_template_option_setting(data)
       # return data structure bellow
       # [{ block_name => { model_name => { column_configration }}}, ...]
-      data.reduce(Hash.new) do |acc, r|
+      data.reduce({}) do |acc, r|
         if is_dush?(r.first.to_s)
           acc[r.first] = r.second
         else
@@ -46,7 +46,7 @@ class DataStructure
     def deep_overwrite from_hash, to_hash
       from_hash.each do |key, val|
         if val.kind_of?(Hash)
-          to_hash[key] ||= Hash.new
+          to_hash[key] ||= {}
           deep_overwrite(val, to_hash[key])
         else
           to_hash[key] = val
@@ -88,7 +88,7 @@ class DataStructure
     end
 
     def gen_structure model_data
-      model_data.reduce(Hash.new) do |acc, r|
+      model_data.reduce({}) do |acc, r|
         # r.second is config_data, like {loop: 3, ...}
         set_col_type(r.second, r[0].to_s)
         acc[r[0]] = r.second
@@ -101,7 +101,7 @@ class DataStructure
       model = eval(str_model)
       foreign_key_data = get_foreign_key_data(model)
 
-      config_data[:col] ||= Hash.new
+      config_data[:col] ||= {}
       model.columns.each do |e|
         symbol_col_name = e.name.to_sym
 
@@ -111,20 +111,22 @@ class DataStructure
           config_data[:col][symbol_col_name] = nil
 
           # set type info
-          config_data[:type] ||= Hash.new
+          config_data[:type] ||= {}
           config_data[:type][symbol_col_name] = e.type.to_s
 
           # set enum info
-          config_data[:enum] ||= Hash.new
+          config_data[:enum] ||= {}
           if is_enum?(e.sql_type.to_s)
             config_data[:enum][symbol_col_name] =
               e.sql_type.to_s[5..-2].tr("'", "").split(",")
           end
 
           # set foreign_key info
-          config_data[:foreign_key] ||= Hash.new
           if is_foreign_key?(symbol_col_name, foreign_key_data)
-            config_data[:foreign_key][symbol_col_name] = foreign_key_data[symbol_col_name]
+            # delete type val for don't run default seeder
+            config_data[:type].delete(symbol_col_name)
+            # use F function for set foreign key
+            config_data[:col][symbol_col_name] = "F|#{foreign_key_data[symbol_col_name].to_s}"
           end
         end
 
@@ -134,7 +136,7 @@ class DataStructure
     def get_foreign_key_data model
       associations = model.reflect_on_all_associations(:belongs_to)
       return { } if associations.empty?
-      associations.reduce(Hash.new)do |acc, r|
+      associations.reduce({})do |acc, r|
         model = r.name.to_s.camelize
         if Object.const_defined?(model.to_sym)
           acc[r.foreign_key.to_sym] = eval(model)

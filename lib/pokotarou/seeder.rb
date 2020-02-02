@@ -4,9 +4,7 @@ class Seeder
       n = config_data[:loop]
       type = config_data[:type][key]
       enum = config_data[:enum][key]
-      foreign_key = config_data[:foreign_key][key]
 
-      return foreign_key.pluck(:id) if foreign_key.present?
       return enum if enum.present?
       return make_array(n, ->(){ rand(100) }) if type == "integer"
       return make_array(n, ->(){ rand(0.0..100.0) }) if type == "float"

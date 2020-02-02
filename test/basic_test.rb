@@ -183,7 +183,6 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "青森県").present?
     assert_equal true, Pref.where(name: "岩手県").present?
   end
-
   # outline: whether 'automatic foreign key' works
   # expected value: registerd 6 datas(pref: 3, member: 3)
   test "automatic foreign_key" do
@@ -242,5 +241,96 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.where(name: "北海道").present?
     assert_equal true, Pref.where(name: "青森県").present?
     assert_equal true, Pref.where(name: "岩手県").present?
+  end
+
+  # outline: whether multiple foreign_key works
+  # expected value: registerd 9 datas
+  #                 registerd [1, 2, 3, 100, 101, 102, 103, 104, 105]
+  test "should register expected foregin_key values" do 
+    Pokotarou.set_args({ name: ["北海道", "青森県", "岩手県"] })
+    Pokotarou.execute("test/data/basic/mutliple_foreign_key_from_model.yml")
+    
+    assert_equal 9, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(pref_id: 100).present?
+    assert_equal true, Member.find_by(pref_id: 101).present?
+    assert_equal true, Member.find_by(pref_id: 102).present?
+    assert_equal true, Member.find_by(pref_id: 103).present?
+    assert_equal true, Member.find_by(pref_id: 104).present?
+    assert_equal true, Member.find_by(pref_id: 105).present?
+  end
+
+  # outline: whether register expected foreign_key values by 2 files
+  # expected value: registerd 6 datas
+  #                 registerd [1, 2, 3, 4, 5, 6]
+  test "should register expected foreign_key values by 2 files" do 
+    Pokotarou.execute("test/data/basic/two_file/foreign_key/register_pref.yml")
+    Pokotarou.execute("test/data/basic/two_file/foreign_key/register_member.yml")
+
+    assert_equal 6, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(pref_id: 4).present?
+    assert_equal true, Member.find_by(pref_id: 5).present?
+    assert_equal true, Member.find_by(pref_id: 6).present?
+  end
+
+  # outline: whether 'maked_col function' works when use one time at same block
+  # expected value: registerd 2 datas
+  #                 registerd ["北海道", "青森県"]
+  test "should registr expected val by maked_col(once)" do
+    Pokotarou.execute("test/data/basic/maked_col/once.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.where(name: "北海道").present?
+    assert_equal true, Member.where(name: "青森県").present?
+  end
+
+  # outline: whether 'maked function' works when use at same model
+  # expected value: registerd 3 datas
+  #                 registerd ["Tarou", "Jirou", "Saburou"]
+  test "should registr expected val by maked_col(same model)" do
+    Pokotarou.import("./test/data/methods.rb")
+    Pokotarou.execute("test/data/basic/maked_col/same_model.yml")
+    assert_equal 3, Member.all.count
+
+    tarou = Member.find_by(name: "Tarou")
+    assert_equal "Tarou", tarou.remarks
+    assert_equal Date.parse('1997/02/05'), tarou.birthday
+
+    jirou = Member.find_by(name: "Jirou")
+    assert_equal "Jirou", jirou.remarks
+    assert_equal Date.parse('1997/02/04'), jirou.birthday
+
+    saburou = Member.find_by(name: "Saburou")
+    assert_equal "Saburou", saburou.remarks
+    assert_equal Date.parse('1997/02/03'), saburou.birthday
+  end
+
+  # outline: whether 'maked_col function' works when used other blocks
+  # expected value: registerd 3 datas
+  #                 registerd ["北海道", "青森"]
+  test "should registr expected val by maked_col(other blocks)" do
+    Pokotarou.execute("test/data/basic/maked_col/other_block.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.where(name: "北海道").present?
+    assert_equal true, Member.where(name: "青森県").present?
+  end
+
+  # outline: whether 'column inseart function' works
+  # expected value: registerd 3 datas
+  #                 registerd name: ["北海道", "青森県", "岩手県"]
+  #                           pref_id: [1, 2, 3]
+  test "should registr expected val by col insert function" do
+    Pokotarou.execute("test/data/basic/column_insert.yml")
+    assert_equal 3, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(name: "北海道").present?
+    assert_equal true, Member.find_by(name: "青森県").present?
+    assert_equal true, Member.find_by(name: "岩手県").present?
   end
 end

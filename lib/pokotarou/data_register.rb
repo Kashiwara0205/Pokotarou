@@ -1,53 +1,107 @@
 class RegistError < StandardError; end
+class SettingError < StandardError; end
 class SeedError < StandardError; end
 
 class DataRegister
   class << self
-    def regist data
+    def register data
       # init maked to accumulate maded data
-      maked = Hash.new
+      maked = {}
+      maked_col = {}
       # init model_data to cache data of model
-      model_cache = Hash.new
+      model_cache = {}
       ActiveRecord::Base.transaction do
         begin
           data.each do |sym_block, model_data|
             next if is_dush?(sym_block.to_s)
-            regist_models(sym_block, model_data, maked, model_cache)
+            setting_register_val_for_bulk(sym_block, model_data, maked, model_cache, maked_col)
           end
+          bulk_hash = merge_block(data.deep_dup)
+          register_by_bulk(bulk_hash, model_cache)
         rescue => e
           raise StandardError.new("#{e.message}")
         end
       end
-
-      ReturnExpressionParser.parse(data[:"return'"], maked) 
+      
+      ReturnExpressionParser.parse(data[:"return'"], maked, maked_col) 
     end
 
     private
 
-    def regist_models sym_block, model_data, maked, model_cache
-      model_data.each do |e|
+    def merge_block data
+      bulk_hash = {}
+      data.each do |block, val|
+        next if is_dush?(block.to_s)
+        val.each do |model, config|
+          if bulk_hash[model].nil?
+            bulk_hash[model] = config
+          else
+            merge_loop(model, config, bulk_hash) if config[:loop].present?
+            merge_seed_data(model, config, bulk_hash) if config[:col].present?
+          end
+        end
+      end
+
+      bulk_hash
+    end
+
+    def merge_loop model, config, bulk_hash
+      bulk_hash[model][:loop] += config[:loop]
+    end
+
+    def merge_seed_data model, config, bulk_hash
+      config[:col].each do |col_name, seed|
+        bulk_hash[model][:col][col_name].concat(seed)
+      end
+    end
+
+    def setting_register_val_for_bulk sym_block, model_data, maked, model_cache, maked_col
+      begin
+        model_data.each do |e|
+          str_model = e.first.to_s
+          save_model_cache(model_cache, str_model)
+
+          model = model_cache[str_model][:model]
+          sym_model = model_cache[str_model][:sym_model]
+
+          # model_data.values is config_data
+          config_data = e.second
+          # set expand expression for loop '<>' and ':' and so on...
+          set_loop_expand_expression(config_data, maked, maked_col)
+          # if there is no setting data, set default seed data
+          set_default_seed(config_data)
+          # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
+          set_seed_arr(model, sym_block, sym_model, config_data, maked, maked_col)
+
+          output_log(config_data[:log]) 
+        end
+      rescue => e
+        raise SettingError.new("
+          Failed setting for bulk insert...
+
+          block: #{sym_block}
+          model: #{str_model}
+          message: #{e.message}
+        ")
+      end
+    end
+
+    def register_by_bulk bulk_hash, model_cache
+      bulk_hash.each do |e|
         str_model = e.first.to_s
-        save_model_cache(model_cache, str_model)
         # model_data.values is config_data
         config_data = e.second
         # col_arr: [:col1, :col2, :col3]
         col_arr = config_data[:col].keys
+        # seed_arr: [[elem1, elem2, elem3...]]
+        seed_arr = config_data[:col].map{|_, val| val }.transpose
 
-        # set expand expression for loop '<>' and ':' and so on...
-        set_loop_expand_expression(config_data, maked)
-        # if there is no setting data, set default seed data
-        set_default_seed(config_data)
-        # seed_arr: [[col1_element, col1_element], [col2_element, col2_element]...]
-        seed_arr = 
-          get_seed_arr(model_cache[str_model][:model], sym_block,
-                         model_cache[str_model][:sym_model], config_data, maked)
-
-        output_log(config_data[:log]) 
         begin
-          model_cache[str_model][:model].import(col_arr, seed_arr.transpose, validate: config_data[:validate], timestamps: false)
+          model_cache[str_model][:model].import(col_arr, seed_arr, validate: config_data[:validate], timestamps: false)
         rescue => e
           raise RegistError.new("
-            block: #{sym_block}
+            Failed bulk insert...
+
             model: #{str_model}
             message: #{e.message}
           ")
@@ -78,19 +132,26 @@ class DataRegister
       end
     end
     
-    def get_seed_arr model, sym_block, sym_model, config_data, maked
+    def set_seed_arr model, sym_block, sym_model, config_data, maked, maked_col
       options = config_data[:option]
       convert_conf = config_data[:convert]
       loop_size = config_data[:loop]
 
       if apply_autoincrement?(config_data[:autoincrement])
-        set_autoincrement(config_data, model, loop_size)
+        prev_id_arr = 
+          if maked_col[sym_model].present? && maked_col[sym_model].has_key?(:id)
+            maked_col[sym_model][:id]
+          else
+            []
+          end
+
+        set_autoincrement(config_data, model, loop_size, prev_id_arr)
       end
 
-      config_data[:col].map do |key, val|
+      config_data[:col].each do |key, val|
         begin 
           # set expand expression '<>' and ':' and so on...
-          set_expand_expression(config_data, key, val, maked)
+          set_expand_expression(config_data, key, val, maked, maked_col)
           expanded_val = config_data[:col][key]
           expanded_val_size = expanded_val.size
 
@@ -112,11 +173,13 @@ class DataRegister
 
               seed
             end
-          update_maked_data(maked, sym_block, sym_model, key, seeds)
-
-          seeds
+          
+          update_maked_data(maked, sym_block, sym_model, key, seeds )
+          update_maked_col(maked_col, sym_model, key, config_data[:col][key])
+          config_data[:col][key] = seeds
         rescue => e
           raise SeedError.new("
+            Failed generate seed data...
             block: #{sym_block}
             model: #{sym_model}
             column: #{key}
@@ -132,25 +195,32 @@ class DataRegister
       autoincrement_flg
     end
 
-    def set_autoincrement config_data, model, loop_size
+    def set_autoincrement config_data, model, loop_size, prev_id_arr
       last_record = model.last
-      # if id is nothing, get 0
-      current_id = last_record.nil? ? 0 : last_record.id
+      current_id = 
+        if prev_id_arr.present?
+          prev_id_arr.last
+        elsif last_record.nil?
+          0
+        else
+          last_record.id
+        end
+      
       additions = current_id + loop_size
       next_id = current_id + 1
 
       config_data[:col][:id] = [*next_id..additions]
     end
 
-    def set_expand_expression config_data, key, val, maked
+    def set_expand_expression config_data, key, val, maked, maked_col
       # if it exists type, there is no need for doing 'expand expression'
       return if config_data[:type][key].present?
-      config_data[:col][key] = SeedExpressionParser.parse(val, maked)
+      config_data[:col][key] = SeedExpressionParser.parse(val, maked, maked_col)
     end
 
-    def set_loop_expand_expression config_data, maked
+    def set_loop_expand_expression config_data, maked, maked_col
       config_data[:loop] = 
-        LoopExpressionParser.parse(config_data[:loop], maked)  
+        LoopExpressionParser.parse(config_data[:loop], maked, maked_col)  
     end
 
     def get_seed arr, size, cnt
@@ -163,9 +233,17 @@ class DataRegister
 
     def update_maked_data maked, sym_block, sym_model, col, seed
       # maked: { key: Model, value: {key: col1, val: [col1_element, col1_element]} }
-      maked[sym_block] ||= Hash.new
-      maked[sym_block][sym_model] ||= Hash.new
+      maked[sym_block] ||= {}
+      maked[sym_block][sym_model] ||= {}
       maked[sym_block][sym_model][col] = seed
+    end
+
+    def update_maked_col maked_col, sym_model, column, vals
+      maked_col[sym_model] ||= {}
+      maked_col[sym_model][column] ||= []
+      maked_col[sym_model][column].concat(vals)
+
+      maked_col
     end
 
     def output_log log

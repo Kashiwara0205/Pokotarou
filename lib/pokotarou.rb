@@ -1,6 +1,7 @@
 Dir[File.expand_path('../pokotarou', __FILE__) << '/*.rb'].each do |file|
   require file
 end
+
 require "activerecord-import"
 
 module Pokotarou
@@ -10,10 +11,19 @@ module Pokotarou
     def execute input
       # if input is filepath, generate config_data
       if input.kind_of?(String)
-        DataRegister.regist(gen_config(input))
+        DataRegister.register(gen_config(input))
       else
-        DataRegister.regist(input)
+        DataRegister.register(input)
       end
+    end
+
+    def batch_execute input_arr
+      handlers = {}
+      input_arr.each do |e|
+        handlers[e[:file_path]] ||= Pokotarou.gen_handler(e[:file_path])
+      end
+
+      BatchDataRegister.register(input_arr, handlers)
     end
 
     def import filepath
@@ -27,10 +37,17 @@ module Pokotarou
     def reset
       AdditionalMethods.remove()
       Arguments.remove()
+      @handler_chache = {}
     end
 
-    def gen_handler filepath
-      PokotarouHandler.new(gen_config(filepath))
+    def gen_handler filepath, cahce = true
+      if cahce
+        @handler_chache ||= {}
+        @handler_chache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
+        @handler_chache[filepath].deep_dup()
+      else
+        PokotarouHandler.new(gen_config(filepath))
+      end
     end
 
     private

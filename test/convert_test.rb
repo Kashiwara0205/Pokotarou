@@ -1,6 +1,5 @@
 require 'test_helper'
 class Pokotarou::ConvertTest < ActiveSupport::TestCase
-
   # outline: whether 'convert empty[0..2]' works 
   # expected value: registerd 3 datas
   #                 registerd ["", "", ""]
