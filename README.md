@@ -23,8 +23,7 @@ If it is the following table, 10,000 records can regist in 0.41s on average
 |created_at|datetime|NO|
 |updated_at|datetime|NO|
 
-Thanks to ActiveRecordImport
-
+Because it contains ActiveRecordImport, it is fast
 
 
 ## Getting started
@@ -170,11 +169,61 @@ Default:
       pref_id: F|Pref
 ```
 
+maked structure
+
+```
+{
+  Block1:{
+    Model:{
+      col1:xxx,
+      col2:xxx
+      col3:xxx
+    }
+  },
+
+  Block2:{
+    Model:{
+      col1:xxx,
+      col2:xxx
+      col3:xxx
+    }
+  },
+}
+```
+
+#### MakedCol function
+'maked_col' is like 'maked'
+but you can write without 'block key'
+Let's look following example.
+
+```yml
+Default:
+  Pref:
+    loop: 2
+    col:
+      name: ["Hokkaido", "Aomori"]
+  Member:
+    loop: 2
+    col:
+      name: <maked_col[:Pref][:name]>
+      pref_id: F|Pref
+```
+
+maked_col structure
+
+```
+{
+  Model:{
+    col1:xxx(merged array from each blocks),
+    col2:xxx,
+    col3:xxx
+  }
+}
+```
+
 #### Foreign key
 
 **※ If you set association(belongs_to, has_many...), Pokotarou automatically register foreign keys**
-
-' F| ' means foreign key. 'F|' is Model.all.pluck(:id)
 
 For example, in the case of below, Member model record is registerd with pref_id(foregin key).
 
@@ -188,6 +237,23 @@ Default:
     loop: 3
     col:
       pref_id: F|Pref
+```
+
+#### Column Symbol
+If you want to register data from each model
+you can write following example.
+
+```yml
+Default:
+  Pref:
+    loop: 3
+    col:
+      name: ["Hokkaido", "Aomori", "Iwate"]
+  Member:
+    loop: 3
+    col:
+      pref_id: C|Pref|id
+      name: C|Pref|name
 ```
 
 #### Expression expansion
