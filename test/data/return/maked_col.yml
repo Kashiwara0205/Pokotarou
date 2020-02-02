@@ -1,0 +1,13 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道", "青森県", "岩手県"]
+
+Default2:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道", "青森県", "岩手県"]
+
+return': <maked_col[:Pref][:id]>

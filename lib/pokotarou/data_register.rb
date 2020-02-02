@@ -16,14 +16,14 @@ class DataRegister
             next if is_dush?(sym_block.to_s)
             setting_register_val_for_bulk(sym_block, model_data, maked, model_cache, maked_col)
           end
-          bulk_hash = merge_block(data)
+          bulk_hash = merge_block(data.deep_dup)
           register_by_bulk(bulk_hash, model_cache)
         rescue => e
           raise StandardError.new("#{e.message}")
         end
       end
-
-      ReturnExpressionParser.parse(data[:"return'"], maked) 
+      
+      ReturnExpressionParser.parse(data[:"return'"], maked, maked_col) 
     end
 
     private

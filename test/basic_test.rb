@@ -318,4 +318,19 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Member.where(name: "北海道").present?
     assert_equal true, Member.where(name: "青森県").present?
   end
+
+  # outline: whether 'column inseart function' works
+  # expected value: registerd 3 datas
+  #                 registerd name: ["北海道", "青森県", "岩手県"]
+  #                           pref_id: [1, 2, 3]
+  test "should registr expected val by col insert function" do
+    Pokotarou.execute("test/data/basic/column_insert.yml")
+    assert_equal 3, Member.all.count
+    assert_equal true, Member.find_by(pref_id: 1).present?
+    assert_equal true, Member.find_by(pref_id: 2).present?
+    assert_equal true, Member.find_by(pref_id: 3).present?
+    assert_equal true, Member.find_by(name: "北海道").present?
+    assert_equal true, Member.find_by(name: "青森県").present?
+    assert_equal true, Member.find_by(name: "岩手県").present?
+  end
 end

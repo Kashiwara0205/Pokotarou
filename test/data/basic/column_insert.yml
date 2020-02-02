@@ -1,0 +1,10 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["北海道", "青森県", "岩手県"]
+  Member:
+    loop: 3
+    col:
+      pref_id: C|Pref|id
+      name: C|Pref|name
