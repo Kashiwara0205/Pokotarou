@@ -18,7 +18,7 @@ class ExpressionParser
         # ForeignKey
         when is_foreign_key?(config_val)
           foreign_key_process(config_val, maked_col)
-        
+
         # Column
         when is_column_symbol?(config_val)
           column_symbol_process(config_val, maked_col)
@@ -53,8 +53,7 @@ class ExpressionParser
       # remove 'F|'
       str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
       model = eval(str_model)
-      ids = model.pluck(:id)
-      return ids.concat(maked_col[str_model.to_sym][:id])
+      return model.pluck(:id)
     end
 
     def column_symbol_process val, maked_col
@@ -144,8 +143,7 @@ class LoopExpressionParser < ExpressionParser
       # remove 'F|'
       str_model = val.sub(FOREIGN_KEY_SYMBOL, "")
       model = eval(str_model)
-      ids = model.pluck(:id)
-      return ids.concat(maked_col[str_model.to_sym][:id]).size
+      return model.pluck(:id).size
     end
 
     def integer_process val
