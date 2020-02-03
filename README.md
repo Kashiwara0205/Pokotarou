@@ -192,6 +192,8 @@ maked structure
 ```
 
 #### MakedCol function
+※ This is a feature under development. Not yet available.
+
 'maked_col' is like 'maked'
 but you can write without 'block key'
 Let's look following example.
@@ -240,6 +242,8 @@ Default:
 ```
 
 #### Column Symbol
+※ This is a feature under development. Not yet available.
+
 If you want to register data from each model
 you can write following example.
 
