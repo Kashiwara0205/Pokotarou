@@ -30,4 +30,8 @@ class PokotarouHandler
   def get_data
     @data
   end
+
+  def set_data data
+    @data = data
+  end
 end
