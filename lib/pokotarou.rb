@@ -17,13 +17,29 @@ module Pokotarou
       end
     end
 
-    def batch_execute input_arr
-      handlers = {}
+    def pipleine_execute input_arr
+      return_vals = []
       input_arr.each do |e|
-        handlers[e[:file_path]] ||= Pokotarou.gen_handler(e[:file_path])
+        handler = gen_handler_with_cache(e[:filepath])
+
+        if e[:change_data].present?
+          e[:change_data].each do |block, config|
+            config.each do |model, seed|
+              seed.each do |col_name, val|         
+                handler.change_seed(block, model, col_name, val)
+              end
+            end
+          end
+        end
+        
+        e[:args] ||= {}
+        e[:args][:passed_return_val] = return_vals.last
+        set_args(e[:args])
+
+        return_vals << Pokotarou.execute(handler.get_data())
       end
 
-      BatchDataRegister.register(input_arr, handlers)
+      return_vals
     end
 
     def import filepath
@@ -40,8 +56,15 @@ module Pokotarou
       @handler_chache = {}
     end
 
-    def gen_handler filepath, cahce = true
+    def gen_handler filepath
       PokotarouHandler.new(gen_config(filepath))
+    end
+
+    def gen_handler_with_cache filepath
+      @handler_cache ||= {}
+      @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
+
+      @handler_cache[filepath].deep_dup
     end
 
     private
