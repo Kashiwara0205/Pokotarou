@@ -37,8 +37,8 @@ class Option
     def add option, val, cnt
       # if val is nil, return nil
       return nil if val.nil?
-      # use '+', not use '<<' to avoid destructive effect
-      return val + "_#{cnt}" if option == "add_id"
+      # not use '<<' to avoid destructive effect
+      return "#{val}_#{cnt}" if option == "add_id"
 
       val
     end
