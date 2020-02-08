@@ -97,32 +97,6 @@ Let's check with the following code.
 Pref.all.count => 3
 ```
 
-## Usage
-
-Following yml file become seed data.
-
-Please make following yml file in your favorite dir.
-
-```yml
-Default:
-  Pref:
-    loop: 3
-```
-
-and write following ruby code in seeds.rb.
-
-```ruby
-Pokotarou.execute("./config_filepath")
-```
-
-when you finished writing, then run rails db:seed
-
-```bash
-$ rails db:seed
-```
-
-As a result, seed data is registerd your db.
-
 ## Documentaion
 You can read a lot more about Pokotarou in its [official docs](https://kashiwara0205.github.io/PokotarouDocs/)
 
