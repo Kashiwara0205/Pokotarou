@@ -28,7 +28,7 @@ class PokotarouHandler
   end
 
   def get_data
-    @data
+    @data.deep_dup
   end
 
   def set_data data

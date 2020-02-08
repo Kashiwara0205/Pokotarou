@@ -114,19 +114,18 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
   # outline: whether 'pokotarou pipleine_execute with cache works
   # expected value: registerd 9 datas
   test "pokotarou handler(pipleine_execute)" do
-
     ids = Pokotarou.pipleine_execute([{
       filepath: "test/data/handler/pipeline_execute.yml", 
       change_data: { Default: { Pref: { name: ["a", "b", "c"] } } },
-      args: nil,
+      args: { created_at: DateTime.parse("2018/02/05") },
     },{
       filepath: "test/data/handler/pipeline_execute.yml", 
       change_data: { Default: { Pref: { name:  ["北海道", "青森県", "岩手県"] } } },
-      args: nil
+      args: { created_at: DateTime.parse("2019/02/05") },
     },{
       filepath: "test/data/handler/pipeline_execute.yml", 
       change_data: { Default: { Pref: { name:  ["茨城県", "栃木県", "沖縄県"] } } },
-      args: nil
+      args: { created_at: DateTime.parse("2020/02/05") },
     }])
 
     assert_equal 9, Pref.all.count
@@ -139,6 +138,9 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: "茨城県").present?
     assert_equal true, Pref.find_by(name: "栃木県").present?
     assert_equal true, Pref.find_by(name: "沖縄県").present?
+    assert_equal 3, Pref.where(created_at: DateTime.parse("2018/02/05")).count
+    assert_equal 3, Pref.where(created_at: DateTime.parse("2019/02/05")).count
+    assert_equal 3, Pref.where(created_at: DateTime.parse("2020/02/05")).count
 
     assert_equal [[1, 2, 3], [4, 5, 6], [7, 8, 9]], ids
     assert_equal true, Pref.find(1).present?
@@ -172,5 +174,26 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: "piyo").present?
 
     assert_equal [["hoge", "fuga", "piyo"], nil], values
+  end
+
+  # outline: whether 'pokotarou pipleine_execute with args works
+  # expected value: registerd 6 datas
+  test "pokotarou handler(pipleine_execute args)" do
+
+    Pokotarou.pipleine_execute([{
+      filepath: "test/data/handler/pipeline_execute_with_args.yml", 
+      args: { name: ["a", "b", "c"] }
+    },{
+      filepath: "test/data/handler/pipeline_execute_with_args.yml", 
+      args: { name: ["d", "e", "f"] }
+    }])
+
+    assert_equal 6, Pref.all.count
+    assert_equal true, Pref.find_by(name: "a").present?
+    assert_equal true, Pref.find_by(name: "b").present?
+    assert_equal true, Pref.find_by(name: "c").present?
+    assert_equal true, Pref.find_by(name: "d").present?
+    assert_equal true, Pref.find_by(name: "e").present?
+    assert_equal true, Pref.find_by(name: "f").present?
   end
 end
