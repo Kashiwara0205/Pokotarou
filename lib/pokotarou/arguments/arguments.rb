@@ -8,6 +8,7 @@ module Arguments
       unless hash_data.kind_of?(Hash)
         raise MisMatchArgType.new("Please use Hash for args")
       end
+
       @args = hash_data
     end
 

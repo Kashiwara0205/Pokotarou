@@ -10,7 +10,6 @@ class ExpressionParser
     def parse config_val, maked = nil, maked_col = nil
       begin
         case
-
         # Array
         when is_array?(config_val)
           array_procees(config_val)

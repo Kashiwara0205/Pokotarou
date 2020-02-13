@@ -14,7 +14,7 @@ class DataRegister
         begin
           data.each do |sym_block, model_data|
             next if is_dush?(sym_block.to_s)
-            setting_register_val_for_bulk(sym_block, model_data, maked, model_cache, maked_col)
+            register_val_by_bulk(sym_block, model_data, maked, model_cache, maked_col)
           end
         rescue => e
           raise StandardError.new("#{e.message}")
@@ -26,39 +26,7 @@ class DataRegister
 
     private
 
-=begin
-    Commented because the influence range was large
-    Used in later versions
-
-    def merge_block data
-      bulk_hash = {}
-      data.each do |block, val|
-        next if is_dush?(block.to_s)
-        val.each do |model, config|
-          if bulk_hash[model].nil?
-            bulk_hash[model] = config
-          else
-            merge_loop(model, config, bulk_hash) if config[:loop].present?
-            merge_seed_data(model, config, bulk_hash) if config[:col].present?
-          end
-        end
-      end
-
-      bulk_hash
-    end
-=end
-
-    def merge_loop model, config, bulk_hash
-      bulk_hash[model][:loop] += config[:loop]
-    end
-
-    def merge_seed_data model, config, bulk_hash
-      config[:col].each do |col_name, seed|
-        bulk_hash[model][:col][col_name].concat(seed)
-      end
-    end
-
-    def setting_register_val_for_bulk sym_block, model_data, maked, model_cache, maked_col
+    def register_val_by_bulk sym_block, model_data, maked, model_cache, maked_col
       begin
         model_data.each do |e|
           str_model = e.first.to_s
@@ -77,7 +45,7 @@ class DataRegister
           set_seed_arr(model, sym_block, sym_model, config_data, maked, maked_col)
 
           output_log(config_data[:log])
-          register_by_bulk(sym_block, str_model, config_data ,model_cache)
+          insert_record(sym_block, str_model, config_data ,model_cache)
         end
       rescue => e
         raise SettingError.new("
@@ -90,7 +58,7 @@ class DataRegister
       end
     end
 
-    def register_by_bulk sym_block, str_model, config_data, model_cache
+    def insert_record sym_block, str_model, config_data, model_cache
       # col_arr: [:col1, :col2, :col3]
       col_arr = config_data[:col].keys
       # seed_arr: [[elem1, elem2, elem3...]]
