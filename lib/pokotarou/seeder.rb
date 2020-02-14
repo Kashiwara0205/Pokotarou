@@ -1,4 +1,4 @@
-class Seeder 
+class Seeder
   class << self
     def gen config_data, key
       n = config_data[:loop]
@@ -9,8 +9,8 @@ class Seeder
       return make_array(n, ->(){ rand(100) }) if type == "integer"
       return make_array(n, ->(){ rand(0.0..100.0) }) if type == "float"
       return make_array(n, ->(){ rand(0.0..1_000_000_000.0) }) if type == "decimal"
-      return make_array(n, ->(){ "test_text test_text" }) if type == "string"
-      return make_array(n, ->(){ "test_long_text test_long_text test_long_text" }) if ["text", "binary"].include?(type)
+      return make_array(n, ->(){ SecureRandom.hex(20) }) if type == "string"
+      return make_array(n, ->(){ SecureRandom.hex(200) }) if ["text", "binary"].include?(type)
       return make_array(n, ->(){ [true, false].sample }) if type == "boolean"
       return make_string_array(n, enum) if type == "string"
       return make_datetime_array() if ["datetime", "date", "time"].include?(type)
