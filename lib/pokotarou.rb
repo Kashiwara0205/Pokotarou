@@ -17,7 +17,7 @@ module Pokotarou
       end
     end
 
-    def pipleine_execute input_arr
+    def pipeline_execute input_arr
       return_vals = []
       input_arr.each do |e|
         handler = gen_handler_with_cache(e[:filepath])
