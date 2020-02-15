@@ -1,5 +1,4 @@
 class RegistError < StandardError; end
-class SettingError < StandardError; end
 class SeedError < StandardError; end
 
 class DataRegister
@@ -27,14 +26,13 @@ class DataRegister
     private
 
     def register_val_by_bulk sym_block, model_data, maked, model_cache, maked_col
-      begin
-        model_data.each do |e|
+      model_data.each do |e|
+        begin
           str_model = e.first.to_s
           save_model_cache(model_cache, str_model)
 
           model = model_cache[str_model][:model]
           sym_model = model_cache[str_model][:sym_model]
-
           # model_data.values is config_data
           config_data = e.second
           # set expand expression for loop '<>' and ':' and so on...
@@ -46,15 +44,20 @@ class DataRegister
 
           output_log(config_data[:log])
           insert_record(sym_block, str_model, config_data ,model_cache)
-        end
-      rescue => e
-        raise SettingError.new("
-          Failed setting for bulk insert...
+        rescue => e
+          print "\e[31m"
+          puts "[Pokotarou ERROR]"
+          puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
+          puts "Failed Register record"
+          puts "BLOCK: #{sym_block}"
+          puts "MODEL: #{str_model}"
+          puts "MESSAGE: #{e.message}"
+          puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
+          print "\e[0m"
+          puts ""
 
-          block: #{sym_block}
-          model: #{str_model}
-          message: #{e.message}
-        ")
+          raise RegistError.new
+        end
       end
     end
 
@@ -63,18 +66,7 @@ class DataRegister
       col_arr = config_data[:col].keys
       # seed_arr: [[elem1, elem2, elem3...]]
       seed_arr = config_data[:col].map{|_, val| val }.transpose
-
-        begin
-          model_cache[str_model][:model].import(col_arr, seed_arr, validate: config_data[:validate], timestamps: false)
-        rescue => e
-          raise RegistError.new("
-            Failed bulk insert...
-
-            block: #{sym_block}
-            model: #{str_model}
-            message: #{e.message}
-          ")
-        end
+      model_cache[str_model][:model].import(col_arr, seed_arr, validate: config_data[:validate], timestamps: false)
     end
 
     def save_model_cache model_cache, str_model
@@ -146,13 +138,19 @@ class DataRegister
           update_maked_col(maked_col, sym_model, key, config_data[:col][key])
           config_data[:col][key] = seeds
         rescue => e
-          raise SeedError.new("
-            Failed generate seed data...
-            block: #{sym_block}
-            model: #{sym_model}
-            column: #{key}
-            message: #{e.message}
-          ")
+          print "\e[31m"
+          puts "[Pokotarou ERROR]"
+          puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
+          puts "Failed Generating seed"
+          puts "BLOCK: #{sym_block}"
+          puts "MODEL: #{sym_model}"
+          puts "COLUMN: #{key}"
+          puts "MESSAGE: #{e.message}"
+          puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
+          print "\e[0m"
+          puts ""
+
+          raise SeedError.new
         end
       end
     end
