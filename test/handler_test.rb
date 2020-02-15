@@ -157,7 +157,6 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
   # outline: whether 'pokotarou pipleine_execute with passed_return_val works
   # expected value: registerd 6 datas
   test "pokotarou handler(pipleine_execute passed_return_val)" do
-
     values = Pokotarou.pipleine_execute([{
       filepath: "test/data/handler/pipeline_execute_passed_return_val/one.yml", 
       change_data: { Default: { Pref: { name: ["a", "b", "c"] } } },
@@ -179,7 +178,6 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
   # outline: whether 'pokotarou pipleine_execute with args works
   # expected value: registerd 6 datas
   test "pokotarou handler(pipleine_execute args)" do
-
     Pokotarou.pipleine_execute([{
       filepath: "test/data/handler/pipeline_execute_with_args.yml", 
       args: { name: ["a", "b", "c"] }
@@ -195,5 +193,24 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: "d").present?
     assert_equal true, Pref.find_by(name: "e").present?
     assert_equal true, Pref.find_by(name: "f").present?
+  end
+
+  # outline: whether 'pokotarou pipleine_execute with import works
+  # expected value: registerd 6 datas
+  test "pokotarou handler(pipleine_execute import)" do
+    Pokotarou.import("./test/data/methods.rb")
+    Pokotarou.pipleine_execute([{
+      filepath: "test/data/handler/import/one.yml", 
+    },{
+      filepath: "test/data/handler/import/two.yml", 
+    }])
+
+    assert_equal 6, Pref.all.count
+    assert_equal true, Pref.find_by(name: "a").present?
+    assert_equal true, Pref.find_by(name: "b").present?
+    assert_equal true, Pref.find_by(name: "c").present?
+    assert_equal true, Pref.find_by(name: "北海道").present?
+    assert_equal true, Pref.find_by(name: "青森県").present?
+    assert_equal true, Pref.find_by(name: "岩手県").present?
   end
 end
