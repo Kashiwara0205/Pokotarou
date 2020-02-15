@@ -19,7 +19,7 @@ class Option
       # separate option to 'select' and 'add'
       # { select = >[], add => [] }
       select_filter = ->(name){ ["rotate", "random"].include?(name) }
-      add_filter = ->(name){ ["add_id"].include?(name) }
+      add_filter = ->(name){ ["add_id", "sequence"].include?(name) }
 
       {
         select: option.find{|s| select_filter.call(s)},
@@ -38,7 +38,7 @@ class Option
       # if val is nil, return nil
       return nil if val.nil?
       # not use '<<' to avoid destructive effect
-      return "#{val}_#{cnt}" if option == "add_id"
+      return "#{val}_#{cnt}" if option == "add_id" || option == "sequence"
 
       val
     end
