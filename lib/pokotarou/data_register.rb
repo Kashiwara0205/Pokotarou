@@ -1,4 +1,4 @@
-class RegistError < StandardError; end
+class RegisterError < StandardError; end
 class SeedError < StandardError; end
 
 class DataRegister
@@ -56,7 +56,7 @@ class DataRegister
           print "\e[0m"
           puts ""
 
-          raise RegistError.new
+          raise RegisterError.new
         end
       end
     end

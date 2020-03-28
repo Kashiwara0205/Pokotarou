@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class Pokotarou::OptionTest < ActiveSupport::TestCase
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether 'add_id' works
   # expected value: registerd 3 datas
   #                 registerd ["北海道_1", "青森県_2", "岩手県_3"]

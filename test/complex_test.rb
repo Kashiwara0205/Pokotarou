@@ -1,5 +1,10 @@
 require 'test_helper'
 class Pokotarou::ComplexTest < ActiveSupport::TestCase
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether 'convert nil[0..0] and add_id' works when nothing col
   # expected value: registerd 3 datas
   #                 registerd [nil, "青森県_1", "岩手県_2"]

@@ -67,7 +67,8 @@ class ExpressionParser
       # remove '<>'
       expression = val.strip[1..-2]
       require AdditionalVariables.filepath if AdditionalVariables.const.present?
-      require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+      AdditionalMethods.filepathes.each do |filepath|; require filepath end
+      AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
       require Arguments.filepath if Arguments.filepath.present?
       return self.parse(eval(expression), maked, maked_col)
     end
@@ -166,7 +167,8 @@ class ConstExpressionParser < ExpressionParser
     def expression_process val, _, _
       # remove '<>'
       expression = val.strip[1..-2]
-      require AdditionalMethods.filepath if AdditionalMethods.filepath.present?
+      AdditionalMethods.filepathes.each do |filepath|; require filepath end
+      AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
       require Arguments.filepath if Arguments.filepath.present?
       return self.parse(eval(expression))
     end

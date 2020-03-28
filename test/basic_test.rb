@@ -333,4 +333,52 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Member.find_by(name: "青森県").present?
     assert_equal true, Member.find_by(name: "岩手県").present?
   end
+
+  # outline: whether 'multiple import' works
+  # expected value: registerd 6 datas
+  #                 registerd name: ["a", "b", "c", "A", "B", "C"]
+  test "should registr expected val by multiple import" do
+    Pokotarou.import("./test/data/methods.rb")
+    Pokotarou.import("./test/data/methods2.rb")
+    Pokotarou.execute("test/data/basic/multiple_import.yml")
+    assert_equal 6, Pref.all.count
+    assert_equal true, Pref.find_by(name: 'a').present?
+    assert_equal true, Pref.find_by(name: 'b').present?
+    assert_equal true, Pref.find_by(name: 'c').present?
+    assert_equal true, Pref.find_by(name: 'A').present?
+    assert_equal true, Pref.find_by(name: 'B').present?
+    assert_equal true, Pref.find_by(name: 'C').present?
+  end
+
+  # outline: whether 'multiple import' works(array version)
+  # expected value: registerd 6 datas
+  #                 registerd name: ["a", "b", "c", "A", "B", "C"]
+  test "should registr expected val by multiple import(array version)" do
+    Pokotarou.import([
+      "./test/data/methods.rb",
+      "./test/data/methods2.rb"
+    ])
+    Pokotarou.execute("test/data/basic/multiple_import.yml")
+    assert_equal 6, Pref.all.count
+    assert_equal true, Pref.find_by(name: 'a').present?
+    assert_equal true, Pref.find_by(name: 'b').present?
+    assert_equal true, Pref.find_by(name: 'c').present?
+    assert_equal true, Pref.find_by(name: 'A').present?
+    assert_equal true, Pref.find_by(name: 'B').present?
+    assert_equal true, Pref.find_by(name: 'C').present?
+  end
+
+  # outline: whether 'multiple import' works(import' version)
+  # expected value: registerd 6 datas
+  #                 registerd name: ["hoge1", "hoge2", "hoge3", "A", "B", "C"]
+  test "should registr expected val by multiple import(import' version)" do
+    Pokotarou.execute("test/data/basic/import_key.yml")
+    assert_equal 6, Pref.all.count
+    assert_equal true, Pref.find_by(name: 'hoge1').present?
+    assert_equal true, Pref.find_by(name: 'hoge2').present?
+    assert_equal true, Pref.find_by(name: 'hoge3').present?
+    assert_equal true, Pref.find_by(name: 'A').present?
+    assert_equal true, Pref.find_by(name: 'B').present?
+    assert_equal true, Pref.find_by(name: 'C').present?
+  end
 end

@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class Pokotarou::TemplateTest < ActiveSupport::TestCase
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether template function corretly works
   # expected value: registerd 6 datas
   #                 registerd 3 name datas(["hogeta", "fuga", "pokota"]) from template

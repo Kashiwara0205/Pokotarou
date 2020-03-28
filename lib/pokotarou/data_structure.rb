@@ -1,7 +1,10 @@
+require "pokotarou/additional_methods.rb"
+
 class DataStructure
   class << self
     def gen data
       execute_template_option_setting(data)
+      execute_import_setting(data)
       # return data structure bellow
       # [{ block_name => { model_name => { column_configration }}}, ...]
       data.reduce({}) do |acc, r|
@@ -16,6 +19,12 @@ class DataStructure
     end
 
     private
+
+    def execute_import_setting data
+      return unless data.has_key?(:"import'")
+      AdditionalMethods.import_from_yml(data[:"import'"])
+      data.delete(:"import'")
+    end
 
     def execute_template_option_setting data
       return unless data.has_key?(:"template'")
