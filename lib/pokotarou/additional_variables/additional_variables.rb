@@ -6,7 +6,9 @@ module AdditionalVariables
 
     LET_KEY = :let
     @let = {}
+    @first_let = {}
     attr_reader :let
+    attr_reader :first_let
     
     def set_const data
       set_const_variables(data)
@@ -19,10 +21,12 @@ module AdditionalVariables
     def remove
       @const = {}
       @let = {}
+      @first_let = {}
     end
 
-    def remove_let
+    def init_let
       @let = {}
+      @first_let = {}
     end
 
     def filepath
@@ -36,10 +40,22 @@ module AdditionalVariables
       @let = data[LET_KEY]
 
       @let.each do |key, val|
-        @let[key] = { IDENT: val }
+        if is_expression?(val)
+          @let[key] = { NeedUpdate: val }
+        else
+          @let[key] = val
+        end
       end
 
       data.delete(LET_KEY)
+
+      @first_let = @let.deep_dup
+    end
+
+    EXPRESSION_REGEXP = /^\s*<.*>\s*$/
+    def is_expression? val
+      return false unless val.kind_of?(String)
+      EXPRESSION_REGEXP =~ val
     end
 
     def set_const_variables data

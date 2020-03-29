@@ -1,6 +1,7 @@
 require "pokotarou/additional_methods.rb"
 require "pokotarou/additional_variables/additional_variables.rb"
 require "pokotarou/arguments/arguments.rb"
+require "pokotarou/p_tool.rb"
 
 def load_filepath
   require AdditionalVariables.filepath
@@ -15,6 +16,7 @@ COLUMN_SYMBOL = "C|"
 
 class ExpressionParser
   class << self
+    
     def parse config_val, maked = nil, maked_col = nil
       begin
         case
@@ -38,9 +40,9 @@ class ExpressionParser
         when is_integer?(config_val)
           integer_process(config_val)
         
-        # Ident
-        when is_ident?(config_val)
-          ident_process(config_val, maked, maked_col)
+        # NeedUpdate
+        when is_need_update?(config_val)
+          need_update_process(config_val, maked, maked_col)
 
         # Nil
         when is_nil?(config_val)
@@ -78,6 +80,12 @@ class ExpressionParser
     def expression_process val, maked, maked_col
       # remove '<>'
       expression = val.strip[1..-2]
+      
+      # update let key
+      AdditionalVariables.first_let.each do |key, val|
+        AdditionalVariables.let[key] = ExpressionParserWithoutUpdate.parse(val, maked, maked_col)
+      end
+
       load_filepath()
       return self.parse(eval(expression), maked, maked_col)
     end
@@ -86,8 +94,8 @@ class ExpressionParser
       nothing_apply_process(val)
     end
 
-    def ident_process val, maked, maked_col
-      self.parse(val[:IDENT], maked, maked_col)
+    def need_update_process val, maked, maked_col
+      return self.parse(val[:NeedUpdate], maked, maked_col)
     end
 
     def nil_process val
@@ -101,6 +109,18 @@ class ExpressionParser
 
     def output_error e
       raise ParseError.new("Failed Expression parse:#{e.message}")
+    end
+  end
+end
+
+class ExpressionParserWithoutUpdate < ExpressionParser
+  class << self
+    private
+    def expression_process val, maked, maked_col
+      # remove '<>'
+      expression = val.strip[1..-2]
+      load_filepath()
+      return self.parse(eval(expression), maked, maked_col)
     end
   end
 end
@@ -221,9 +241,9 @@ def is_integer? val
   val.instance_of?(Integer)
 end
 
-def is_ident? val
+def is_need_update? val
   return false unless val.kind_of?(Hash)
-  val.has_key?(:IDENT)
+  val.has_key?(:NeedUpdate)
 end
 
 def is_nil? val
