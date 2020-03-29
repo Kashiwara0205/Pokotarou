@@ -1,3 +1,5 @@
+require "pokotarou/additional_variables/additional_variables.rb"
+
 class RegisterError < StandardError; end
 class SeedError < StandardError; end
 
@@ -108,6 +110,11 @@ class DataRegister
         set_autoincrement(config_data, model, loop_size, prev_id_arr)
       end
 
+      # set variables
+      if config_data.has_key?(:let)
+        AdditionalVariables.set_let(config_data)
+      end
+          
       config_data[:col].each do |key, val|
         begin
           # set expand expression '<>' and ':' and so on...
@@ -153,6 +160,8 @@ class DataRegister
           raise SeedError.new
         end
       end
+
+      AdditionalVariables.remove_let()
     end
 
     def apply_autoincrement? autoincrement_flg

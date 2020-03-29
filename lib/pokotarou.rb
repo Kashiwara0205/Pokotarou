@@ -63,6 +63,7 @@ module Pokotarou
     def reset
       AdditionalMethods.remove()
       Arguments.remove()
+      AdditionalVariables.remove()
       @handler_chache = {}
     end
 
@@ -86,7 +87,7 @@ module Pokotarou
     end
 
     def set_const_val_config contents
-      AdditionalVariables.import(contents)
+      AdditionalVariables.set_const(contents)
     end
 
     def load_file filepath

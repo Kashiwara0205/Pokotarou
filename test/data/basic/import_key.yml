@@ -1,6 +1,6 @@
 import': 
-  - "./test/data/methods.rb"
-  - "./test/data/methods2.rb"
+  - ./test/data/methods.rb
+  - ./test/data/methods2.rb
 
 Default:
   Pref: 

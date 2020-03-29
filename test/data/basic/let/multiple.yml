@@ -1,0 +1,12 @@
+Def1:
+  Member: 
+    loop: 2
+    let:
+      name: ["a", "b"]
+      remarks: xxxx
+      birthday: <DateTime.parse("1997-02-05")>
+    col:
+      name: <let[:name]>
+      remarks: <let[:remarks]>
+      birthday: <let[:birthday]>
+      pref_id: 1

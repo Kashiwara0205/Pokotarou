@@ -381,4 +381,41 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: 'B').present?
     assert_equal true, Pref.find_by(name: 'C').present?
   end
+
+  # outline: whether 'let (maked)' works
+  # expected value: registerd 6 datas
+  #                 registerd name: ["北海道", "青森県", "岩手県", "北海道", "青森県", "岩手県"]
+  test "should registr expected val by let key(maked)" do
+    Pokotarou.execute("test/data/basic/let/maked.yml")
+    assert_equal 6, Pref.all.count
+    assert_equal 2, Pref.where(name: '北海道').count
+    assert_equal 2, Pref.where(name: '青森県').count
+    assert_equal 2, Pref.where(name: '岩手県').count
+  end
+
+  # outline: whether 'let (multiple)' works
+  # expected value: registerd 2 datas
+  test "should registr expected val by let key(multiple)" do
+    Pokotarou.execute("test/data/basic/let/multiple.yml")
+    assert_equal 2, Member.all.count
+    assert_equal true, Member.find_by(name: 'a').present?
+    assert_equal true, Member.find_by(name: 'b').present?
+    assert_equal 2, Member.where(remarks: 'xxxx').count
+    assert_equal 2, Member.where(birthday: DateTime.parse("1997-02-05")).count
+  end
+
+  # outline: whether 'let (maked sameblock)' works
+  # expected value: registerd 2 datas
+  test "should registr expected val by let key(sameblock)" do
+    Pokotarou.execute("test/data/basic/let/maked_sameblock.yml")
+    assert_equal 4, Member.all.count
+    assert_equal true, Member.find_by(name: 'a').present?
+    assert_equal true, Member.find_by(remarks: 'a').present?
+    assert_equal true, Member.find_by(name: 'b').present?
+    assert_equal true, Member.find_by(remarks: 'b').present?
+    assert_equal true, Member.find_by(name: 'c').present?
+    assert_equal true, Member.find_by(remarks: 'c').present?
+    assert_equal true, Member.find_by(name: 'd').present?
+    assert_equal true, Member.find_by(remarks: 'd').present?
+  end
 end

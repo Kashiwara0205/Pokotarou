@@ -1,6 +1,14 @@
 require "pokotarou/additional_methods.rb"
 require "pokotarou/additional_variables/additional_variables.rb"
 require "pokotarou/arguments/arguments.rb"
+
+def load_filepath
+  require AdditionalVariables.filepath
+  require Arguments.filepath
+  AdditionalMethods.filepathes.each do |filepath|; require filepath end
+  AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
+end
+
 class ParseError < StandardError; end
 FOREIGN_KEY_SYMBOL = "F|"
 COLUMN_SYMBOL = "C|"
@@ -29,6 +37,10 @@ class ExpressionParser
         # Integer
         when is_integer?(config_val)
           integer_process(config_val)
+        
+        # Ident
+        when is_ident?(config_val)
+          ident_process(config_val, maked, maked_col)
 
         # Nil
         when is_nil?(config_val)
@@ -66,15 +78,16 @@ class ExpressionParser
     def expression_process val, maked, maked_col
       # remove '<>'
       expression = val.strip[1..-2]
-      require AdditionalVariables.filepath if AdditionalVariables.const.present?
-      AdditionalMethods.filepathes.each do |filepath|; require filepath end
-      AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
-      require Arguments.filepath if Arguments.filepath.present?
+      load_filepath()
       return self.parse(eval(expression), maked, maked_col)
     end
 
     def integer_process val
       nothing_apply_process(val)
+    end
+
+    def ident_process val, maked, maked_col
+      self.parse(val[:IDENT], maked, maked_col)
     end
 
     def nil_process val
@@ -161,15 +174,13 @@ class LoopExpressionParser < ExpressionParser
 end
 
 # for const variables
-class ConstExpressionParser < ExpressionParser
+class ConstParser < ExpressionParser
   class << self
     private
     def expression_process val, _, _
       # remove '<>'
       expression = val.strip[1..-2]
-      AdditionalMethods.filepathes.each do |filepath|; require filepath end
-      AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
-      require Arguments.filepath if Arguments.filepath.present?
+      load_filepath()
       return self.parse(eval(expression))
     end
 
@@ -208,6 +219,11 @@ end
 
 def is_integer? val
   val.instance_of?(Integer)
+end
+
+def is_ident? val
+  return false unless val.kind_of?(Hash)
+  val.has_key?(:IDENT)
 end
 
 def is_nil? val
