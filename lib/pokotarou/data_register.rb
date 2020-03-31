@@ -1,12 +1,14 @@
-class RegistError < StandardError; end
+require "pokotarou/additional_variables/additional_variables.rb"
+
+class RegisterError < StandardError; end
 class SeedError < StandardError; end
 
 class DataRegister
   class << self
     def register data
       # init maked to accumulate maded data
-      maked = {}
-      maked_col = {}
+      maked = Hash.new { |h,k| h[k] = Hash.new(&h.default_proc) }
+      maked_col = Hash.new { |h,k| h[k] = {} }
       # init model_data to cache data of model
       model_cache = {}
       ActiveRecord::Base.transaction do
@@ -56,7 +58,7 @@ class DataRegister
           print "\e[0m"
           puts ""
 
-          raise RegistError.new
+          raise RegisterError.new
         end
       end
     end
@@ -155,6 +157,13 @@ class DataRegister
       end
     end
 
+    def update_let_key let, maked, maked_col
+      let.each do |key, val|
+        # TODO: run only maked_col or make key
+        AdditionalVariables.let[key] = ExpressionParser.parse(val, maked, maked_col)
+      end
+    end
+
     def apply_autoincrement? autoincrement_flg
       # default true
       return true if autoincrement_flg.nil?
@@ -199,17 +208,12 @@ class DataRegister
 
     def update_maked_data maked, sym_block, sym_model, col, seed
       # maked: { key: Model, value: {key: col1, val: [col1_element, col1_element]} }
-      maked[sym_block] ||= {}
-      maked[sym_block][sym_model] ||= {}
       maked[sym_block][sym_model][col] = seed
     end
 
     def update_maked_col maked_col, sym_model, column, vals
-      maked_col[sym_model] ||= {}
       maked_col[sym_model][column] ||= []
       maked_col[sym_model][column].concat(vals)
-
-      maked_col
     end
 
     def output_log log

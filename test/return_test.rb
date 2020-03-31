@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class Pokotarou::ReturnTest < ActiveSupport::TestCase
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether 'return' works
   # expected value: return vale ["北海道", "青森県", "岩手県"]
   test "return" do

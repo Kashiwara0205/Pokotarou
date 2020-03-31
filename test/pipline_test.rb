@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class Pokotarou::PiplineTest < ActiveSupport::TestCase  
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether 'pokotarou pipeline_execute with cache works
   # expected value: registerd 9 datas
   test "pokotarou pipeline_execute" do

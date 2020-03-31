@@ -9,15 +9,24 @@ module Pokotarou
 
   class << self
     def execute input
+      AdditionalMethods.init()
+
       # if input is filepath, generate config_data
-      if input.kind_of?(String)
-        DataRegister.register(gen_config(input))
-      else
-        DataRegister.register(input)
-      end
+      return_val =
+        if input.kind_of?(String)
+          DataRegister.register(gen_config(input))
+        else
+          DataRegister.register(input)
+        end
+
+      AdditionalMethods.remove_filepathes_from_yml()
+
+      return_val
     end
 
     def pipeline_execute input_arr
+      AdditionalMethods.init()
+
       return_vals = []
       input_arr.each do |e|
         handler = gen_handler_with_cache(e[:filepath])
@@ -37,6 +46,7 @@ module Pokotarou
         set_args(e[:args])
 
         return_vals << Pokotarou.execute(handler.get_data())
+        AdditionalMethods.remove_filepathes_from_yml()
       end
 
       return_vals
@@ -53,6 +63,7 @@ module Pokotarou
     def reset
       AdditionalMethods.remove()
       Arguments.remove()
+      AdditionalVariables.remove()
       @handler_chache = {}
     end
 
@@ -76,7 +87,7 @@ module Pokotarou
     end
 
     def set_const_val_config contents
-      AdditionalVariables.import(contents)
+      AdditionalVariables.set_const(contents)
     end
 
     def load_file filepath

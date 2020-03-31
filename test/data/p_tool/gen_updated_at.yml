@@ -1,0 +1,6 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      created_at: <Ptool.gen_created_at(3, "1997-02-05")>
+      updated_at: <Ptool.gen_updated_at(maked_col[:Pref][:created_at])>

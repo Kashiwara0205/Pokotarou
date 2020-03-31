@@ -1,14 +1,40 @@
 module AdditionalMethods
   class << self
-    @filepath = nil
-    attr_reader :filepath
+    attr_reader :filepathes
+    attr_reader :filepathes_from_yml
+
+    @filepathes = []
+    @filepathes_from_yml = []
+
+    def init
+      @filepathes ||= []
+      @filepathes_from_yml = []
+    end
 
     def import filepath
-      @filepath = filepath
+      add(@filepathes, filepath)
+    end
+
+    def import_from_yml filepath
+      add(@filepathes_from_yml, filepath)
     end
 
     def remove
-      @filepath = nil
+      @filepathes = []
+      @filepathes_from_yml = []
+    end
+
+    def remove_filepathes_from_yml
+      @filepathes_from_yml = []
+    end
+
+    private
+    def add filepath_arr, filepath
+      if filepath.instance_of?(Array)
+        filepath_arr.concat(filepath)
+      else
+        filepath_arr.push(filepath)
+      end
     end
   end
 end

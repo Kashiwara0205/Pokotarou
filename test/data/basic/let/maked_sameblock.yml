@@ -1,0 +1,19 @@
+Def1:
+  Member: 
+    loop: 2
+    let:
+      remarks: <maked_col[:Member][:name]>
+    col:
+      name: ["a", "b"]
+      remarks: <let[:remarks]>
+      pref_id: 1
+
+Def2:
+  Member: 
+    loop: 2
+    let:
+      remarks: <maked[:Def2][:Member][:name]>
+    col:
+      name: ["c", "d"]
+      remarks: <let[:remarks]>
+      pref_id: 1

@@ -1,5 +1,10 @@
 require 'test_helper'
 class Pokotarou::ConstTest < ActiveSupport::TestCase
+  def setup
+    # reset import method dataes
+    Pokotarou.reset
+  end
+
   # outline: whether correctly use const variables in yml
   # expected value: registerd 3 datas
   #                 registerd ["北海道", "青森県", "岩手県"]

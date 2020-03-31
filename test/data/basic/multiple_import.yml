@@ -1,0 +1,11 @@
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: <lowercase_array>
+
+Default2:
+  Pref: 
+    loop: 3
+    col:
+      name: <alphabet_array>

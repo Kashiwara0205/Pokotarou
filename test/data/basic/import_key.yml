@@ -1,0 +1,15 @@
+import': 
+  - ./test/data/methods.rb
+  - ./test/data/methods2.rb
+
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: <hoge_array>
+
+Default2:
+  Pref: 
+    loop: 3
+    col:
+      name: <alphabet_array>
