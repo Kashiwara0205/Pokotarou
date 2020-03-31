@@ -110,12 +110,6 @@ class DataRegister
         set_autoincrement(config_data, model, loop_size, prev_id_arr)
       end
 
-      # set variables
-      AdditionalVariables.init_let()
-      if config_data.has_key?(:let)
-        AdditionalVariables.set_let(config_data)
-      end
-
       config_data[:col].each do |key, val|
         begin
           # set expand expression '<>' and ':' and so on...

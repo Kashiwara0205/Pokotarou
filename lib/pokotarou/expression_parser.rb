@@ -80,12 +80,6 @@ class ExpressionParser
     def expression_process val, maked, maked_col
       # remove '<>'
       expression = val.strip[1..-2]
-      
-      # update let key
-      AdditionalVariables.first_let.each do |key, val|
-        AdditionalVariables.let[key] = ExpressionParserWithoutUpdate.parse(val, maked, maked_col)
-      end
-
       load_filepath()
       return self.parse(eval(expression), maked, maked_col)
     end
@@ -109,18 +103,6 @@ class ExpressionParser
 
     def output_error e
       raise ParseError.new("Failed Expression parse:#{e.message}")
-    end
-  end
-end
-
-class ExpressionParserWithoutUpdate < ExpressionParser
-  class << self
-    private
-    def expression_process val, maked, maked_col
-      # remove '<>'
-      expression = val.strip[1..-2]
-      load_filepath()
-      return self.parse(eval(expression), maked, maked_col)
     end
   end
 end
