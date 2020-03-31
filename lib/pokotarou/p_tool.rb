@@ -17,8 +17,7 @@ module Ptool
       end
     end
 
-    def gen_updated_at created_arr = [], with_random_time = false
-      return gen_created_at() if created_arr.empty?
+    def gen_updated_at created_arr, with_random_time = false
       created_arr.each.reduce([]) do |acc, created_datetime|
         hours_num = 5
         minutes_num = 10
