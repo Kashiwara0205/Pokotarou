@@ -1,1 +1,2 @@
-Anyone in English is OK
+
+Anyone who can communicate in English can contribute
