@@ -53,6 +53,7 @@ module Pokotarou
     end
 
     def import filepath
+      AdditionalMethods.init()
       AdditionalMethods.import(filepath)
     end
 
