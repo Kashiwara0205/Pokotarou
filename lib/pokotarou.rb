@@ -9,7 +9,7 @@ module Pokotarou
 
   class << self
     def execute input
-      AdditionalMethods.init()
+      init_proc()
 
       # if input is filepath, generate config_data
       return_val =
@@ -25,7 +25,7 @@ module Pokotarou
     end
 
     def pipeline_execute input_arr
-      AdditionalMethods.init()
+      init_proc()
 
       return_vals = []
       input_arr.each do |e|
@@ -53,7 +53,8 @@ module Pokotarou
     end
 
     def import filepath
-      AdditionalMethods.init()
+      init_proc()
+
       AdditionalMethods.import(filepath)
     end
 
@@ -69,10 +70,14 @@ module Pokotarou
     end
 
     def gen_handler filepath
+      init_proc()
+
       PokotarouHandler.new(gen_config(filepath))
     end
 
     def gen_handler_with_cache filepath
+      init_proc()
+
       @handler_cache ||= {}
       @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
 
@@ -80,6 +85,9 @@ module Pokotarou
     end
 
     private
+    def init_proc
+      AdditionalMethods.init()
+    end
 
     def gen_config filepath
       contents = load_file(filepath)
