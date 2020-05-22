@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Kashiwara"]
   s.email       = ["tamatebako0205@gmail.com"]
   s.summary     = "This gem is seeder which is very usefull"
+  s.homepage    = "https://github.com/Kashiwara0205/Pokotarou"
   s.description = "Pokotarou is convenient seeder of 'Ruby on Rails'"
   s.license     = "MIT"
 
