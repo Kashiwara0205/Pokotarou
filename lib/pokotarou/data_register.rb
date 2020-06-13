@@ -171,20 +171,23 @@ class DataRegister
     end
 
     def set_autoincrement config_data, model, loop_size, prev_id_arr
-      last_record = model.last
+      max_id = model.maximum(:id)
+
       current_id =
         if prev_id_arr.present?
           prev_id_arr.last
-        elsif last_record.nil?
+        elsif max_id.nil?
           0
         else
-          last_record.id
+          max_id
         end
 
       additions = current_id + loop_size
       next_id = current_id + 1
 
-      config_data[:col][:id] = [*next_id..additions]
+      ids = [*next_id..additions]
+      ids.shuffle! if config_data[:randomincrement]
+      config_data[:col][:id] = ids
     end
 
     def set_expand_expression config_data, key, val, maked, maked_col

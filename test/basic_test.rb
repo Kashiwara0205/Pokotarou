@@ -381,4 +381,24 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: 'B').present?
     assert_equal true, Pref.find_by(name: 'C').present?
   end
+
+  # outline: whether 'randomincrement' works
+  # expected value: can register without double registration
+  #                 refisterd 15 datas
+  test "should registr 3 count data by randomincrement" do
+    Pokotarou.execute("test/data/basic/random_increment.yml")
+    assert_equal 3, Pref.all.count
+
+    Pokotarou.execute("test/data/basic/random_increment.yml")
+    assert_equal 6, Pref.all.count
+
+    Pokotarou.execute("test/data/basic/random_increment.yml")
+    assert_equal 9, Pref.all.count
+
+    Pokotarou.execute("test/data/basic/random_increment.yml")
+    assert_equal 12, Pref.all.count
+
+    Pokotarou.execute("test/data/basic/random_increment.yml")
+    assert_equal 15, Pref.all.count
+  end
 end
