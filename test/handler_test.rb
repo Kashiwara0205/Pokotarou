@@ -115,4 +115,37 @@ class Pokotarou::HandlerTest < ActiveSupport::TestCase
     assert_equal true, Pref.find_by(name: "b").present?
     assert_equal true, Pref.find_by(name: "c").present?
   end
+
+  # outline: whether works "set_randomincrement"
+  # expected value: registerd 6 datas
+  test "should register 6 datas when set randomincrement" do
+    handler = Pokotarou.gen_handler("test/data/handler/set_randomincrement.yml")
+    handler.set_randomincrement(:Default, :Pref, true)
+    handler.make
+    assert_equal 3, Pref.all.count
+
+    handler.make
+    assert_equal 6, Pref.all.count
+  end
+
+  # outline: whether works "set_autoincrement"
+  # expected value: registerd 6 datas
+  test "should register 6 datas when set autoincrement" do
+    handler = Pokotarou.gen_handler("test/data/handler/set_autoincrement.yml")
+    handler.set_autoincrement(:Default, :Pref, false)
+    
+    handler.change_seed(:Default, :Pref, :id, [3, 4, 5])
+    handler.make
+    assert_equal 3, Pref.all.count
+    assert Pref.find(3).present?
+    assert Pref.find(4).present?
+    assert Pref.find(5).present?
+
+    handler.change_seed(:Default, :Pref, :id, [56, 57, 58])
+    handler.make
+    assert_equal 6, Pref.all.count
+    assert Pref.find(56).present?
+    assert Pref.find(57).present?
+    assert Pref.find(58).present?
+  end
 end

@@ -5,108 +5,190 @@ end
 require "activerecord-import"
 
 module Pokotarou
-  class NotFoundLoader < StandardError; end
-
-  class << self
-    def execute input
-      init_proc()
-
-      # if input is filepath, generate config_data
-      return_val =
-        if input.kind_of?(String)
-          DataRegister.register(gen_config(input))
-        else
-          DataRegister.register(input)
-        end
-
-      AdditionalMethods.remove_filepathes_from_yml()
-
-      return_val
-    end
-
-    def pipeline_execute input_arr
-      init_proc()
-
-      return_vals = []
-      input_arr.each do |e|
-        handler = gen_handler_with_cache(e[:filepath])
-
-        if e[:change_data].present?
-          e[:change_data].each do |block, config|
-            config.each do |model, seed|
-              seed.each do |col_name, val|         
-                handler.change_seed(block, model, col_name, val)
+  class Operater
+    class NotFoundLoader < StandardError; end
+    class << self
+      def execute input
+        init_proc()
+  
+        # if input is filepath, generate config_data
+        return_val =
+          if input.kind_of?(String)
+            DataRegister.register(gen_config(input))
+          else
+            DataRegister.register(input)
+          end
+  
+        AdditionalMethods.remove_filepathes_from_yml()
+  
+        return_val
+      end
+  
+      def pipeline_execute input_arr
+        init_proc()
+  
+        return_vals = []
+        input_arr.each do |e|
+          handler = gen_handler_with_cache(e[:filepath])
+  
+          if e[:change_data].present?
+            e[:change_data].each do |block, config|
+              config.each do |model, seed|
+                seed.each do |col_name, val|         
+                  handler.change_seed(block, model, col_name, val)
+                end
               end
             end
           end
+          
+          e[:args] ||= {}
+          e[:args][:passed_return_val] = return_vals.last
+          set_args(e[:args])
+  
+          return_vals << Pokotarou.execute(handler.get_data())
+          AdditionalMethods.remove_filepathes_from_yml()
         end
-        
-        e[:args] ||= {}
-        e[:args][:passed_return_val] = return_vals.last
-        set_args(e[:args])
-
-        return_vals << Pokotarou.execute(handler.get_data())
-        AdditionalMethods.remove_filepathes_from_yml()
+  
+        return_vals
       end
+  
+      def import filepath
+        init_proc()
+  
+        AdditionalMethods.import(filepath)
+      end
+  
+      def set_args hash
+        Arguments.import(hash)
+      end
+  
+      def reset
+        AdditionalMethods.remove()
+        Arguments.remove()
+        AdditionalVariables.remove()
+        @handler_chache = {}
+      end
+  
+      def gen_handler filepath
+        init_proc()
+  
+        PokotarouHandler.new(gen_config(filepath))
+      end
+  
+      def gen_handler_with_cache filepath
+        init_proc()
+  
+        @handler_cache ||= {}
+        @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
+  
+        @handler_cache[filepath].deep_dup
+      end
+  
+      private
+      def init_proc
+        AdditionalMethods.init()
+      end
+  
+      def gen_config filepath
+        contents = load_file(filepath)
+        set_const_val_config(contents)
+        DataStructure.gen(contents)
+      end
+  
+      def set_const_val_config contents
+        AdditionalVariables.set_const(contents)
+      end
+  
+      def load_file filepath
+        case File.extname(filepath)
+        when ".yml"
+          return YmlLoader.load(filepath)
+        else
+          raise NotFoundLoader.new("not found loader")
+        end
+      end
+    end
+  end
+end
 
-      return_vals
+module Pokotarou
+  class << self
+    def execute input
+      Operater.execute(input)
+    end
+
+    def pipeline_execute input_arr
+      Operater.pipeline_execute(input_arr)
     end
 
     def import filepath
-      init_proc()
-
-      AdditionalMethods.import(filepath)
+      Operater.import(filepath)
     end
 
     def set_args hash
-      Arguments.import(hash)
+      Operater.set_args(hash)
     end
 
     def reset
-      AdditionalMethods.remove()
-      Arguments.remove()
-      AdditionalVariables.remove()
-      @handler_chache = {}
+      Operater.reset()
     end
 
     def gen_handler filepath
-      init_proc()
-
-      PokotarouHandler.new(gen_config(filepath))
+      Operater.gen_handler(filepath)
     end
 
     def gen_handler_with_cache filepath
-      init_proc()
-
-      @handler_cache ||= {}
-      @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
-
-      @handler_cache[filepath].deep_dup
+      Operater.gen_handler_with_cache(filepath)
     end
+  end
+end
 
-    private
-    def init_proc
-      AdditionalMethods.init()
-    end
+class PokotarouHandler
+  def initialize data
+    @data = data
+  end
 
-    def gen_config filepath
-      contents = load_file(filepath)
-      set_const_val_config(contents)
-      DataStructure.gen(contents)
-    end
+  def make
+    ::Pokotarou::Operater.execute(get_data())
+  end
 
-    def set_const_val_config contents
-      AdditionalVariables.set_const(contents)
-    end
+  def delete_block sym_block
+    @data.delete(sym_block)
+  end
 
-    def load_file filepath
-      case File.extname(filepath)
-      when ".yml"
-        return YmlLoader.load(filepath)
-      else
-        raise NotFoundLoader.new("not found loader")
-      end
-    end
+  def delete_model sym_block, sym_class
+    @data[sym_block].delete(sym_class)
+  end
 
+  def delete_col sym_block, sym_class, sym_col
+    exists_content = ->(key){ @data[sym_block][sym_class][key].present? }
+
+    @data[sym_block][sym_class][:col].delete(sym_col) if exists_content.call(:col)
+    @data[sym_block][sym_class][:option].delete(sym_col) if exists_content.call(:option)
+    @data[sym_block][sym_class][:convert].delete(sym_col) if exists_content.call(:convert)
+  end
+
+  def change_loop sym_block, sym_class, n
+    @data[sym_block][sym_class][:loop] = n
+  end
+
+  def change_seed sym_block, sym_class, sym_col, arr
+    @data[sym_block][sym_class][:col][sym_col] = arr
+  end
+
+  def get_data
+    @data.deep_dup
+  end
+
+  def set_data data
+    @data = data
+  end
+ 
+  def set_randomincrement sym_block, sym_class, status
+    @data[sym_block][sym_class][:randomincrement] = status
+  end
+
+  def set_autoincrement sym_block, sym_class, status
+    @data[sym_block][sym_class][:autoincrement] = status
   end
 end
