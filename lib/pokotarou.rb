@@ -3,6 +3,7 @@ Dir[File.expand_path('../pokotarou', __FILE__) << '/*.rb'].each do |file|
 end
 
 require "activerecord-import"
+require "pokotarou/registration_config_maker/main.rb"
 
 module Pokotarou
   class Operater
@@ -92,7 +93,7 @@ module Pokotarou
       def gen_config filepath
         contents = load_file(filepath)
         set_const_val_config(contents)
-        DataStructure.gen(contents)
+        RegistrationConfigMaker::Main.gen(contents)
       end
   
       def set_const_val_config contents
