@@ -4,6 +4,7 @@ end
 
 require "activerecord-import"
 require "pokotarou/registration_config_maker/main.rb"
+require "pokotarou/seed_data_register/main.rb"
 
 module Pokotarou
   class Operater
@@ -15,9 +16,9 @@ module Pokotarou
         # if input is filepath, generate config_data
         return_val =
           if input.kind_of?(String)
-            DataRegister.register(gen_config(input))
+            SeedDataRegister::Main.register(gen_config(input))
           else
-            DataRegister.register(input)
+            SeedDataRegister::Main.register(input)
           end
   
         AdditionalMethods.remove_filepathes_from_yml()
