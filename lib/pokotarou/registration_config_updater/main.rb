@@ -1,9 +1,15 @@
 require "pokotarou/expression_parser.rb"
-require "pokotarou/seeder.rb"
+require "pokotarou/registration_config_updater/default_value_maker.rb"
+require "pokotarou/registration_config_updater/option_config.rb"
+require "pokotarou/registration_config_updater/convert_config.rb"
+require "pokotarou/registration_config_updater/array_utils.rb"
 
 module RegistrationConfigUpdater
   class Main
     class << self
+        
+      include ArrayUtils
+
       def update model_content, block_name_sym, model_cache, maked, maked_col
         model_name = model_content.first.to_s
         model_config = model_content.second
@@ -23,15 +29,14 @@ module RegistrationConfigUpdater
       end
 
       def set_default_seed model_config
-        block = ->(symbol){ :id == symbol }
         # each column type, key is symbolize column name
         model_config[:type].each do |key, _|
           # if it is id, skip
-          next if block.call(key)
+          next if :id == key
           # if there is data already, skip
           next if model_config[:col][key].present?
   
-          model_config[:col][key] = Seeder.gen(model_config, key)
+          model_config[:col][key] = DefaultValueMaker.make(model_config, key)
         end
       end  
 
@@ -70,18 +75,18 @@ module RegistrationConfigUpdater
   
             # apply converter
             if convert_conf.present?
-              expanded_val = Converter.convert(expanded_val, convert_conf[key])
+              expanded_val = ConvertConfig.execute(expanded_val, convert_conf[key])
             end
   
             # get option configration
-            option_conf = options.nil? ? nil : Option.gen(options[key])
+            option_conf = OptionConfig.fetch(options, key)
   
             # Take count yourself, because .with_index is slow
             cnt = 0
             seeds =
               loop_size.times.map do
-                seed =
-                  option_conf.nil? ? get_seed(expanded_val, expanded_val_size, cnt) : get_seed_with_option(expanded_val, expanded_val_size, option_conf, cnt)
+                seed = 
+                  option_conf.nil? ? get_rotated_val(expanded_val, expanded_val_size, cnt) : get_seed_with_option(expanded_val, expanded_val_size, option_conf, cnt)
                 cnt += 1
   
                 seed
@@ -140,12 +145,9 @@ module RegistrationConfigUpdater
         config_data[:col][key] = SeedExpressionParser.parse(val, maked, maked_col)
       end
   
-      def get_seed arr, size, cnt
-        ArrayOperation.get_rotated_val(arr, size, cnt)
-      end
-  
+
       def get_seed_with_option arr, size, option, cnt
-        Option.apply(arr, size, option, cnt)
+        OptionConfig.execute(arr, size, option, cnt)
       end
   
       def update_maked_data maked, sym_block, sym_model, col, seed

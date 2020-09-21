@@ -104,7 +104,7 @@ module Pokotarou
       def load_file filepath
         case File.extname(filepath)
         when ".yml"
-          return YmlLoader.load(filepath)
+          return YAML.load_file(filepath).deep_symbolize_keys!
         else
           raise NotFoundLoader.new("not found loader")
         end

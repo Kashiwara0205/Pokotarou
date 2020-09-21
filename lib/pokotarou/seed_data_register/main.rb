@@ -32,9 +32,8 @@ module SeedDataRegister
       def register_val_by_bulk block_name_sym, model_data, maked, model_cache, maked_col
         model_data.each do |e|
           begin
-            t = Time.now
             ::RegistrationConfigUpdater::Main.update(e, block_name_sym, model_cache, maked, maked_col)
-    
+            
             model_name = e.first.to_s
             model_config = e.second
             output_log(model_config[:log])
