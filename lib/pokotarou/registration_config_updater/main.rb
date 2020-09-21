@@ -15,6 +15,7 @@ module RegistrationConfigUpdater
         model_config = model_content.second
         update_model_cache(model_cache, model_name)
 
+
         model = model_cache[model_name][:model]
         model_name_sym = model_cache[model_name][:sym_model]
         set_loop_expand_expression(model_config, maked, maked_col)
@@ -62,10 +63,9 @@ module RegistrationConfigUpdater
             else
               []
             end
-  
           set_autoincrement(config_data, model, loop_size, prev_id_arr)
         end
-  
+
         config_data[:col].each do |key, val|
           begin
             # set expand expression '<>' and ':' and so on...
@@ -95,6 +95,7 @@ module RegistrationConfigUpdater
             update_maked_data(maked, sym_block, sym_model, key, seeds )
             update_maked_col(maked_col, sym_model, key, config_data[:col][key])
             config_data[:col][key] = seeds
+
           rescue => e
             print "\e[31m"
             puts "[Pokotarou ERROR]"
@@ -111,6 +112,7 @@ module RegistrationConfigUpdater
             raise SeedError.new
           end
         end
+
       end
   
       def has_autoincrement_config? autoincrement_flg
@@ -120,21 +122,20 @@ module RegistrationConfigUpdater
       end
   
       def set_autoincrement config_data, model, loop_size, prev_id_arr
-        max_id = model.maximum(:id)
-  
+        
         current_id =
           if prev_id_arr.present?
             prev_id_arr.last
-          elsif max_id.nil?
-            0
-          else
-            max_id
+          else 
+            max_id = model.maximum("id")
+            max_id.nil? ? 0 : max_id
           end
-  
+
         additions = current_id + loop_size
         next_id = current_id + 1
   
         ids = [*next_id..additions]
+
         ids.shuffle! if config_data[:randomincrement]
         config_data[:col][:id] = ids
       end

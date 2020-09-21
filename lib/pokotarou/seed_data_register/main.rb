@@ -33,12 +33,10 @@ module SeedDataRegister
         model_data.each do |e|
           begin
             ::RegistrationConfigUpdater::Main.update(e, block_name_sym, model_cache, maked, maked_col)
-            
             model_name = e.first.to_s
             model_config = e.second
             output_log(model_config[:log])
             insert_record(block_name_sym, model_name, model_config ,model_cache)
-
           rescue => e
             print "\e[31m"
             puts "[Pokotarou ERROR]"

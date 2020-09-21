@@ -26,12 +26,9 @@ module RegistrationConfigUpdater
       def separate option
         # separate option to 'select' and 'add'
         # { select = >[], add => [] }
-        select_filter = ->(name){ ["rotate", "random"].include?(name) }
-        add_filter = ->(name){ ["add_id", "sequence"].include?(name) }
-
         {
-          select: option.find{|s| select_filter.call(s)},
-          add: option.find{|s| add_filter.call(s)}
+          select: option.find{|f| ["rotate", "random"].include?(f)},
+          add: option.find{|f| ["add_id", "sequence"].include?(f) }
         }
       end
 
