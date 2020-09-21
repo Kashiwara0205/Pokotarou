@@ -21,7 +21,7 @@ module Pokotarou
             SeedDataRegister::Main.register(input)
           end
   
-        AdditionalMethods.remove_filepathes_from_yml()
+        AdditionalMethods::Main.remove_filepathes_from_yml()
   
         return_val
       end
@@ -48,7 +48,7 @@ module Pokotarou
           set_args(e[:args])
   
           return_vals << Pokotarou.execute(handler.get_data())
-          AdditionalMethods.remove_filepathes_from_yml()
+          AdditionalMethods::Main.remove_filepathes_from_yml()
         end
   
         return_vals
@@ -57,17 +57,17 @@ module Pokotarou
       def import filepath
         init_proc()
   
-        AdditionalMethods.import(filepath)
+        AdditionalMethods::Main.import(filepath)
       end
   
       def set_args hash
-        Arguments.import(hash)
+        AdditionalArguments::Main.import(hash)
       end
   
       def reset
-        AdditionalMethods.remove()
-        Arguments.remove()
-        AdditionalVariables.remove()
+        AdditionalMethods::Main.remove()
+        AdditionalArguments::Main.remove()
+        AdditionalVariables::Main.remove()
         @handler_chache = {}
       end
   
@@ -88,17 +88,13 @@ module Pokotarou
   
       private
       def init_proc
-        AdditionalMethods.init()
+        AdditionalMethods::Main.init()
       end
   
       def gen_config filepath
         contents = load_file(filepath)
-        set_const_val_config(contents)
+        AdditionalVariables::Main.set_const(contents)
         RegistrationConfigMaker::Main.gen(contents)
-      end
-  
-      def set_const_val_config contents
-        AdditionalVariables.set_const(contents)
       end
   
       def load_file filepath

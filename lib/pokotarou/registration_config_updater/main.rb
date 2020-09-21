@@ -1,4 +1,4 @@
-require "pokotarou/expression_parser.rb"
+require "pokotarou/parser/parser.rb"
 require "pokotarou/registration_config_updater/default_value_maker.rb"
 require "pokotarou/registration_config_updater/option_config.rb"
 require "pokotarou/registration_config_updater/convert_config.rb"

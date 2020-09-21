@@ -1,14 +1,10 @@
-require "pokotarou/additional_methods.rb"
-require "pokotarou/additional_variables/additional_variables.rb"
-require "pokotarou/arguments/arguments.rb"
+require "pokotarou/additional_variables/main.rb"
+require "pokotarou/additional_methods/main.rb"
+require "pokotarou/additional_arguments/main.rb"
 require "pokotarou/p_tool.rb"
 
-def load_filepath
-  require AdditionalVariables.filepath
-  require Arguments.filepath
-  AdditionalMethods.filepathes.each do |filepath|; require filepath end
-  AdditionalMethods.filepathes_from_yml.each do |filepath|; require filepath end
-end
+def args; AdditionalArguments::Main.args end
+def const; AdditionalVariables::Main.const end
 
 class ParseError < StandardError; end
 FOREIGN_KEY_SYMBOL = "F|"
@@ -80,7 +76,7 @@ class ExpressionParser
     def expression_process val, maked, maked_col
       # remove '<>'
       expression = val.strip[1..-2]
-      load_filepath()
+      AdditionalMethods::Main.load
       return self.parse(eval(expression), maked, maked_col)
     end
 
@@ -182,7 +178,7 @@ class ConstParser < ExpressionParser
     def expression_process val, _, _
       # remove '<>'
       expression = val.strip[1..-2]
-      load_filepath()
+      AdditionalMethods::Main.load
       return self.parse(eval(expression))
     end
 

@@ -1,4 +1,4 @@
-require "pokotarou/additional_variables/additional_variables.rb"
+require "pokotarou/additional_variables/main.rb"
 require "pokotarou/registration_config_updater/main.rb"
 
 module SeedDataRegister
