@@ -8,23 +8,23 @@ module Pokotarou
     class NotFoundLoader < StandardError; end
     class << self
       def execute input
-        init_proc()
+        AdditionalMethods::Main.init()
   
         # if input is filepath, generate config_data
         return_val =
           if input.kind_of?(String)
-            ::Pokotarou::SeedDataRegister::Main.register(gen_config(input))
+            SeedDataRegister::Main.register(gen_config(input))
           else
-            ::Pokotarou::SeedDataRegister::Main.register(input)
+            SeedDataRegister::Main.register(input)
           end
   
-        ::Pokotarou::AdditionalMethods::Main.remove_filepathes_from_yml()
+        AdditionalMethods::Main.remove_filepathes_from_yml()
   
         return_val
       end
   
       def pipeline_execute input_arr
-        init_proc()
+        AdditionalMethods::Main.init()
   
         return_vals = []
         input_arr.each do |e|
@@ -45,37 +45,36 @@ module Pokotarou
           set_args(e[:args])
   
           return_vals << Pokotarou.execute(handler.get_data())
-          ::Pokotarou::AdditionalMethods::Main.remove_filepathes_from_yml()
+          AdditionalMethods::Main.remove_filepathes_from_yml()
         end
   
         return_vals
       end
   
       def import filepath
-        init_proc()
-  
-        ::Pokotarou::AdditionalMethods::Main.import(filepath)
+        AdditionalMethods::Main.init()
+        AdditionalMethods::Main.import(filepath)
       end
   
       def set_args hash
-        ::Pokotarou::AdditionalArguments::Main.import(hash)
+        AdditionalArguments::Main.import(hash)
       end
   
       def reset
-        ::Pokotarou::AdditionalMethods::Main.remove()
-        ::Pokotarou::AdditionalArguments::Main.remove()
-        ::Pokotarou::AdditionalVariables::Main.remove()
+        AdditionalMethods::Main.remove()
+        AdditionalArguments::Main.remove()
+        AdditionalVariables::Main.remove()
         @handler_chache = {}
       end
   
       def gen_handler filepath
-        init_proc()
+        AdditionalMethods::Main.init()
   
         PokotarouHandler.new(gen_config(filepath))
       end
   
       def gen_handler_with_cache filepath
-        init_proc()
+        AdditionalMethods::Main.init()
   
         @handler_cache ||= {}
         @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
@@ -84,13 +83,10 @@ module Pokotarou
       end
   
       private
-      def init_proc
-        ::Pokotarou::AdditionalMethods::Main.init()
-      end
   
       def gen_config filepath
         contents = YAML.load_file(filepath).deep_symbolize_keys!
-        ::Pokotarou::AdditionalVariables::Main.set_const(contents)
+        AdditionalVariables::Main.set_const(contents)
         RegistrationConfigMaker::Main.gen(contents)
       end
       
