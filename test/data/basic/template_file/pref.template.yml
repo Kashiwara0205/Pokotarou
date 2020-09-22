@@ -1,0 +1,4 @@
+PrefTemplate:
+  loop: 3
+  col:
+    name: ["hogeta", "fuga", "pokota"]

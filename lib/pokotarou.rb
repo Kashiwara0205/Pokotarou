@@ -1,31 +1,30 @@
-Dir[File.expand_path('../pokotarou', __FILE__) << '/*.rb'].each do |file|
-  require file
-end
-
 require "activerecord-import"
+require "pokotarou/registration_config_maker/main.rb"
+require "pokotarou/seed_data_register/main.rb"
+require "pokotarou/parser/const_parser.rb"
 
 module Pokotarou
   class Operater
     class NotFoundLoader < StandardError; end
     class << self
       def execute input
-        init_proc()
+        AdditionalMethods::Main.init()
   
         # if input is filepath, generate config_data
         return_val =
           if input.kind_of?(String)
-            DataRegister.register(gen_config(input))
+            SeedDataRegister::Main.register(gen_config(input))
           else
-            DataRegister.register(input)
+            SeedDataRegister::Main.register(input)
           end
   
-        AdditionalMethods.remove_filepathes_from_yml()
+        AdditionalMethods::Main.remove_filepathes_from_yml()
   
         return_val
       end
   
       def pipeline_execute input_arr
-        init_proc()
+        AdditionalMethods::Main.init()
   
         return_vals = []
         input_arr.each do |e|
@@ -46,37 +45,36 @@ module Pokotarou
           set_args(e[:args])
   
           return_vals << Pokotarou.execute(handler.get_data())
-          AdditionalMethods.remove_filepathes_from_yml()
+          AdditionalMethods::Main.remove_filepathes_from_yml()
         end
   
         return_vals
       end
   
       def import filepath
-        init_proc()
-  
-        AdditionalMethods.import(filepath)
+        AdditionalMethods::Main.init()
+        AdditionalMethods::Main.import(filepath)
       end
   
       def set_args hash
-        Arguments.import(hash)
+        AdditionalArguments::Main.import(hash)
       end
   
       def reset
-        AdditionalMethods.remove()
-        Arguments.remove()
-        AdditionalVariables.remove()
+        AdditionalMethods::Main.remove()
+        AdditionalArguments::Main.remove()
+        AdditionalVariables::Main.remove()
         @handler_chache = {}
       end
   
       def gen_handler filepath
-        init_proc()
+        AdditionalMethods::Main.init()
   
         PokotarouHandler.new(gen_config(filepath))
       end
   
       def gen_handler_with_cache filepath
-        init_proc()
+        AdditionalMethods::Main.init()
   
         @handler_cache ||= {}
         @handler_cache[filepath] ||= PokotarouHandler.new(gen_config(filepath))
@@ -85,28 +83,13 @@ module Pokotarou
       end
   
       private
-      def init_proc
-        AdditionalMethods.init()
-      end
   
       def gen_config filepath
-        contents = load_file(filepath)
-        set_const_val_config(contents)
-        DataStructure.gen(contents)
+        contents = YAML.load_file(filepath).deep_symbolize_keys!
+        AdditionalVariables::Main.set_const(contents)
+        RegistrationConfigMaker::Main.gen(contents)
       end
-  
-      def set_const_val_config contents
-        AdditionalVariables.set_const(contents)
-      end
-  
-      def load_file filepath
-        case File.extname(filepath)
-        when ".yml"
-          return YmlLoader.load(filepath)
-        else
-          raise NotFoundLoader.new("not found loader")
-        end
-      end
+      
     end
   end
 end

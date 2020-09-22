@@ -1,0 +1,5 @@
+MemberTemplate:
+  loop: 6
+  col:
+    pref_id: F|Pref
+    name: ["t1", "t2", "t3", "t4", "t5", "t6"]

@@ -1,0 +1,9 @@
+template_path':
+  - ./test/data/basic/template_file/pref.template.yml
+  - ./test/data/basic/template_file/member.template.yml
+
+ListFunction:
+  Pref: 
+    template: PrefTemplate
+  Member:
+    template: MemberTemplate
