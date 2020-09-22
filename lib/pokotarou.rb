@@ -92,19 +92,11 @@ module Pokotarou
       end
   
       def gen_config filepath
-        contents = load_file(filepath)
+        contents = YAML.load_file(filepath).deep_symbolize_keys!
         AdditionalVariables::Main.set_const(contents)
         RegistrationConfigMaker::Main.gen(contents)
       end
-  
-      def load_file filepath
-        case File.extname(filepath)
-        when ".yml"
-          return YAML.load_file(filepath).deep_symbolize_keys!
-        else
-          raise NotFoundLoader.new("not found loader")
-        end
-      end
+      
     end
   end
 end

@@ -37,7 +37,7 @@ module RegistrationConfigMaker
       end
 
       def set_template_option all_content
-        return  unless ConfigDomain.has_dush_template_syntax?(all_content)
+        return if !ConfigDomain.has_dush_template_syntax?(all_content) && !ConfigDomain.has_dush_template_path_syntax?(all_content)
         TemplateOptionSetter.set(all_content)
       end
 

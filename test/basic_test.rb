@@ -401,4 +401,46 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     Pokotarou.execute("test/data/basic/random_increment.yml")
     assert_equal 15, Pref.all.count
   end
+
+  # outline: whether template_path' works
+  # expected value: can register without double registration
+  #                 refisterd 3 pref datas
+  #                 registerd 6 memebr datas
+  test "should registr 3 pref data by template_path'" do
+    Pokotarou.execute("test/data/basic/template_file/template_file.yml")
+
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.find_by(name: 'hogeta').present?
+    assert_equal true, Pref.find_by(name: 'fuga').present?
+    assert_equal true, Pref.find_by(name: 'pokota').present?
+
+    assert_equal 6, Member.all.count
+    assert_equal true, Member.find_by(name: 't1').present?
+    assert_equal true, Member.find_by(name: 't2').present?
+    assert_equal true, Member.find_by(name: 't3').present?
+    assert_equal true, Member.find_by(name: 't4').present?
+    assert_equal true, Member.find_by(name: 't5').present?
+    assert_equal true, Member.find_by(name: 't6').present?
+  end
+
+  # outline: whether template_path' and template' works
+  # expected value: can register without double registration
+  #                 refisterd 3 pref datas
+  #                 registerd 6 memebr datas
+  test "should registr 3 pref data by template_path' and template'" do
+    Pokotarou.execute("test/data/basic/template_file/template_file_with_template_config.yml")
+
+    assert_equal 3, Pref.all.count
+    assert_equal true, Pref.find_by(name: 'hogeta2').present?
+    assert_equal true, Pref.find_by(name: 'fuga2').present?
+    assert_equal true, Pref.find_by(name: 'pokota2').present?
+
+    assert_equal 6, Member.all.count
+    assert_equal true, Member.find_by(name: 't1').present?
+    assert_equal true, Member.find_by(name: 't2').present?
+    assert_equal true, Member.find_by(name: 't3').present?
+    assert_equal true, Member.find_by(name: 't4').present?
+    assert_equal true, Member.find_by(name: 't5').present?
+    assert_equal true, Member.find_by(name: 't6').present?
+  end
 end

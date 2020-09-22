@@ -1,0 +1,15 @@
+template_path':
+  - ./test/data/basic/template_file/pref.template.yml
+  - ./test/data/basic/template_file/member.template.yml
+
+template':
+  PrefTemplate2:
+    loop: 3
+    col:
+      name: ["hogeta2", "fuga2", "pokota2"]
+
+ListFunction:
+  Pref: 
+    template: PrefTemplate2
+  Member:
+    template: MemberTemplate

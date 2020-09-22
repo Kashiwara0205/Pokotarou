@@ -10,7 +10,12 @@ module RegistrationConfigMaker
         return false if all_content.blank?
         return all_content.has_key?(:"template'")
       end
-  
+
+      def has_dush_template_path_syntax? all_content
+        return false if all_content.blank?
+        return all_content.has_key?(:"template_path'")
+      end
+
       def has_grouping_syntax? model_content
         return false if model_content.blank?
         return model_content.has_key?(:grouping)
