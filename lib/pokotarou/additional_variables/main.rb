@@ -1,3 +1,5 @@
+require "pokotarou/parser/parser.rb"
+
 module Pokotarou
   class AdditionalVariables
     module Main
@@ -12,7 +14,7 @@ module Pokotarou
   
           # parse expression configlation
           @const.each do |key, val|
-            @const[key] = ::ConstParser.parse(val)
+            @const[key] = ConstParser.parse(val)
           end
   
           data.delete(CONST_KEY)
