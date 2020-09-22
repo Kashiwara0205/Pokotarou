@@ -1,5 +1,3 @@
-require "pokotarou/parser/parser.rb"
-
 module Pokotarou
   class AdditionalVariables
     module Main

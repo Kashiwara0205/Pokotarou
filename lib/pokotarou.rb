@@ -1,6 +1,7 @@
 require "activerecord-import"
 require "pokotarou/registration_config_maker/main.rb"
 require "pokotarou/seed_data_register/main.rb"
+require "pokotarou/parser/const_parser.rb"
 
 module Pokotarou
   class Operater

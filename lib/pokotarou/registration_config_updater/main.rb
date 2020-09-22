@@ -1,13 +1,15 @@
-require "pokotarou/parser/parser.rb"
 require "pokotarou/registration_config_updater/default_value_maker.rb"
 require "pokotarou/registration_config_updater/option_config.rb"
 require "pokotarou/registration_config_updater/convert_config.rb"
 require "pokotarou/registration_config_updater/array_utils.rb"
+require "pokotarou/parser/seed_data_expression_parser.rb"
+require "pokotarou/parser/loop_expression_parser.rb"
+require "pokotarou/parser/return_expression_parser..rb"
+
 module Pokotarou
   module RegistrationConfigUpdater
     class Main
       class << self
-          
         include ArrayUtils
   
         def update model_content, block_name_sym, model_cache, maked, maked_col
