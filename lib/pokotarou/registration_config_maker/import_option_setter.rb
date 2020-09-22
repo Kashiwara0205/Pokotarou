@@ -3,7 +3,7 @@ module RegistrationConfigMaker
   class ImportOptionSetter
     class << self
       def set all_content
-        ::AdditionalMethods::Main.import_from_yml(all_content[:"import'"])
+        ::Pokotarou::AdditionalMethods::Main.import_from_yml(all_content[:"import'"])
         all_content.delete(:"import'")
       end
     end

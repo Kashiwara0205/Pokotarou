@@ -1,7 +1,3 @@
-Dir[File.expand_path('../pokotarou', __FILE__) << '/*.rb'].each do |file|
-  require file
-end
-
 require "activerecord-import"
 require "pokotarou/registration_config_maker/main.rb"
 require "pokotarou/seed_data_register/main.rb"
@@ -16,12 +12,12 @@ module Pokotarou
         # if input is filepath, generate config_data
         return_val =
           if input.kind_of?(String)
-            SeedDataRegister::Main.register(gen_config(input))
+            ::Pokotarou::SeedDataRegister::Main.register(gen_config(input))
           else
-            SeedDataRegister::Main.register(input)
+            ::Pokotarou::SeedDataRegister::Main.register(input)
           end
   
-        AdditionalMethods::Main.remove_filepathes_from_yml()
+        ::Pokotarou::AdditionalMethods::Main.remove_filepathes_from_yml()
   
         return_val
       end
@@ -48,7 +44,7 @@ module Pokotarou
           set_args(e[:args])
   
           return_vals << Pokotarou.execute(handler.get_data())
-          AdditionalMethods::Main.remove_filepathes_from_yml()
+          ::Pokotarou::AdditionalMethods::Main.remove_filepathes_from_yml()
         end
   
         return_vals
@@ -57,17 +53,17 @@ module Pokotarou
       def import filepath
         init_proc()
   
-        AdditionalMethods::Main.import(filepath)
+        ::Pokotarou::AdditionalMethods::Main.import(filepath)
       end
   
       def set_args hash
-        AdditionalArguments::Main.import(hash)
+        ::Pokotarou::AdditionalArguments::Main.import(hash)
       end
   
       def reset
-        AdditionalMethods::Main.remove()
-        AdditionalArguments::Main.remove()
-        AdditionalVariables::Main.remove()
+        ::Pokotarou::AdditionalMethods::Main.remove()
+        ::Pokotarou::AdditionalArguments::Main.remove()
+        ::Pokotarou::AdditionalVariables::Main.remove()
         @handler_chache = {}
       end
   
@@ -88,12 +84,12 @@ module Pokotarou
   
       private
       def init_proc
-        AdditionalMethods::Main.init()
+        ::Pokotarou::AdditionalMethods::Main.init()
       end
   
       def gen_config filepath
         contents = YAML.load_file(filepath).deep_symbolize_keys!
-        AdditionalVariables::Main.set_const(contents)
+        ::Pokotarou::AdditionalVariables::Main.set_const(contents)
         RegistrationConfigMaker::Main.gen(contents)
       end
       

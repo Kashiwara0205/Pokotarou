@@ -3,8 +3,8 @@ require "pokotarou/additional_methods/main.rb"
 require "pokotarou/additional_arguments/main.rb"
 require "pokotarou/p_tool.rb"
 
-def args; AdditionalArguments::Main.args end
-def const; AdditionalVariables::Main.const end
+def args; ::Pokotarou::AdditionalArguments::Main.args end
+def const; ::Pokotarou::AdditionalVariables::Main.const end
 
 class ParseError < StandardError; end
 FOREIGN_KEY_SYMBOL = "F|"
@@ -76,7 +76,7 @@ class ExpressionParser
     def expression_process val, maked, maked_col
       # remove '<>'
       expression = val.strip[1..-2]
-      AdditionalMethods::Main.load
+      ::Pokotarou::AdditionalMethods::Main.load
       return self.parse(eval(expression), maked, maked_col)
     end
 
@@ -178,7 +178,7 @@ class ConstParser < ExpressionParser
     def expression_process val, _, _
       # remove '<>'
       expression = val.strip[1..-2]
-      AdditionalMethods::Main.load
+      ::Pokotarou::AdditionalMethods::Main.load
       return self.parse(eval(expression))
     end
 
