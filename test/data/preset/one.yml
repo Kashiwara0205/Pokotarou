@@ -1,0 +1,9 @@
+preset_path':
+  - ./test/data/preset/pref.preset.yml
+
+Default:
+  Member:
+    loop: 1
+    col:
+      pref_id: F|Pref
+      name: "hoge"

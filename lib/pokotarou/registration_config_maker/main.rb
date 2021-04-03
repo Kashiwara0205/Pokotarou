@@ -4,7 +4,8 @@ require "pokotarou/registration_config_maker/import_option_setter.rb"
 require "pokotarou/registration_config_maker/template_option_setter.rb"
 require "pokotarou/registration_config_maker/grouping_option_setter.rb"
 require "pokotarou/registration_config_maker/model_option_setter.rb"
-  
+require "pokotarou/registration_config_maker/preset_option_setter.rb"
+
 module Pokotarou
   module RegistrationConfigMaker
     class Main
@@ -29,12 +30,18 @@ module Pokotarou
   
         def set_header_config all_content
           set_template_option(all_content)
+          set_preset_option(all_content)
           set_import_option(all_content)
         end
   
         def set_import_option all_content
           return unless ConfigDomain.has_dush_import_syntax?(all_content)
           ImportOptionSetter.set(all_content)
+        end
+
+        def set_preset_option all_content
+          return all_content unless ConfigDomain.has_dush_preset_path_syntax?(all_content)
+          PresetOptionSetter.set(all_content)
         end
   
         def set_template_option all_content

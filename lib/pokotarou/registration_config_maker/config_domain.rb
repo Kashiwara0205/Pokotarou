@@ -16,6 +16,11 @@ module Pokotarou
           return false if all_content.blank?
           return all_content.has_key?(:"template_path'")
         end
+
+        def has_dush_preset_path_syntax? all_content
+          return false if all_content.blank?
+          return all_content.has_key?(:"preset_path'")
+        end
   
         def has_grouping_syntax? model_content
           return false if model_content.blank?

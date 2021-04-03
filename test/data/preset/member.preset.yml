@@ -1,0 +1,5 @@
+MemberPreset:
+  Member: 
+    loop: 2
+    col:
+      name: ["PresetMember1", "PresetMember2"]
