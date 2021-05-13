@@ -1,0 +1,3 @@
+preset_path':
+  - ./test/data/preset/one.yml
+  - ./test/data/preset/only_test_model_preset.yml
