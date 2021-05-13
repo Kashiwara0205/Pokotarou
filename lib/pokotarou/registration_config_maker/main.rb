@@ -5,12 +5,15 @@ require "pokotarou/registration_config_maker/template_option_setter.rb"
 require "pokotarou/registration_config_maker/grouping_option_setter.rb"
 require "pokotarou/registration_config_maker/model_option_setter.rb"
 require "pokotarou/registration_config_maker/preset_option_setter.rb"
+require "pokotarou/additional_variables/main.rb"
 
 module Pokotarou
   module RegistrationConfigMaker
     class Main
       class << self
-        def gen all_content
+        def gen filepath
+          all_content = YAML.load_file(filepath).deep_symbolize_keys!
+          AdditionalVariables::Main.set_const(all_content)
           set_header_config(all_content)
           all_content.reduce({}) do |acc, block_content|
             block_name = block_content.first
