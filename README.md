@@ -80,7 +80,7 @@ Default:
 and write following ruby code in seeds.rb.
 
 ```ruby
-Pokotarou.execute("./db/pref_data.yml")
+Pokotarou.make("./db/pref_data.yml")
 ```
 
 and execute following command!!!!!  
