@@ -40,7 +40,7 @@ module Pokotarou
 
           # presetを展開してpresetが入っていた場合には再度展開する
           if all_content.has_key?(:"preset_path'")
-            set(all_content, conflicet_hash)
+            set(all_content)
           end
 
           all_content
