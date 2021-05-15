@@ -4,8 +4,7 @@ module Pokotarou
     module ArrayUtils
       # return rotated val in passed array
       def get_rotated_val array, size, cnt
-        raise NothingDataError.new("Nothing seed data") if array.nil?
-        raise NothingDataError.new("Seed data is empty") if size.zero?
+        raise NothingDataError.new("Seed data is empty") if array.nil? || size.zero?
         x = (size + cnt) / size
   
         array[ size + cnt - size * x ]

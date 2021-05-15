@@ -9,6 +9,7 @@ require "pokotarou/additional_variables/main.rb"
 
 module Pokotarou
   module RegistrationConfigMaker
+    class FailedGenerateConfigError < StandardError; end
     class Main
       class << self
         def gen filepath
@@ -16,6 +17,7 @@ module Pokotarou
           AdditionalVariables::Main.set_const(all_content)
           set_header_config(all_content)
           all_content.reduce({}) do |acc, block_content|
+
             block_name = block_content.first
             block_config = block_content.second
   
@@ -26,6 +28,7 @@ module Pokotarou
             end
   
             acc
+            
           end
         end
   
@@ -53,12 +56,12 @@ module Pokotarou
         end
   
         def set_model_config_to_acc acc, block_content
-          set_grouping_option(block_content.second)
-          ModelOptionSetter.set(acc, block_content)
+            set_grouping_option(block_content.second)
+            ModelOptionSetter.set(acc, block_content)
         end
   
         def set_grouping_option block_content
-          block_content.each do |_, model_content|
+          block_content.each do |model_name, model_content|
             GroupingOptionSetter.set(model_content) if ConfigDomain.has_grouping_syntax?(model_content)
           end
         end

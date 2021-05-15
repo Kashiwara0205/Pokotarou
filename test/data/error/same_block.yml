@@ -1,0 +1,7 @@
+preset_path':
+  - ./test/data/error/pref.preset.yml
+Default:
+  Pref: 
+    loop: 3
+    col:
+      name: ["x"]

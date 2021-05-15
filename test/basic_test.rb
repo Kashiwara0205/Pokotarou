@@ -18,6 +18,13 @@ class Pokotarou::BasicTest < ActiveSupport::TestCase
     assert_equal 3, Pref.all.count
   end
 
+  # outline: makeメソッドの動作を担保
+  # expected value: 3件のデータ登録
+  test "make sure make method" do
+    Pokotarou.make("test/data/basic/nothing_conf.yml")
+    assert_equal 3, Pref.all.count
+  end
+  
   # outline: whether pokotarou can register with the same model
   # expected value: registerd 6 datas
   test "same model" do

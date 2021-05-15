@@ -11,7 +11,7 @@ module Pokotarou
       end
 
       def output_error e
-        raise ParseError.new("Failed Seed Expression parse:#{e.message}")
+        raise ParseError.new("Failed parse [  #{e.message} ]")
       end
     end 
   end

@@ -4,8 +4,6 @@ require "pokotarou/registration_config_updater/main.rb"
 module Pokotarou
   module SeedDataRegister
     class Main
-      class RegisterError < StandardError; end
-      class SeedError < StandardError; end
   
       class << self
         def register data
@@ -21,7 +19,7 @@ module Pokotarou
                 register_val_by_bulk(sym_block, model_data, maked, model_cache, maked_col)
               end
             rescue => e
-              raise StandardError.new("#{e.message}")
+              raise e
             end
           end
       
@@ -39,18 +37,7 @@ module Pokotarou
               output_log(model_config[:log])
               insert_record(block_name_sym, model_name, model_config ,model_cache)
             rescue => e
-              print "\e[31m"
-              puts "[Pokotarou ERROR]"
-              puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
-              puts "Failed Register record"
-              puts "BLOCK: #{block_name_sym}"
-              puts "MODEL: #{model_name}"
-              puts "MESSAGE: #{e.message}"
-              puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
-              print "\e[0m"
-              puts ""
-      
-              raise RegisterError.new
+              raise e
             end
           end
         end

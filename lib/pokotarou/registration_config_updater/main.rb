@@ -8,6 +8,7 @@ require "pokotarou/parser/return_expression_parser..rb"
 
 module Pokotarou
   module RegistrationConfigUpdater
+    class SeedError < StandardError; end
     class Main
       class << self
         include ArrayUtils
@@ -98,12 +99,11 @@ module Pokotarou
               update_maked_data(maked, sym_block, sym_model, key, seeds )
               update_maked_col(maked_col, sym_model, key, config_data[:col][key])
               config_data[:col][key] = seeds
-  
+
             rescue => e
               print "\e[31m"
-              puts "[Pokotarou ERROR]"
+              puts "[ERROR]"
               puts "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
-              puts "Failed Generating seed"
               puts "BLOCK: #{sym_block}"
               puts "MODEL: #{sym_model}"
               puts "COLUMN: #{key}"
@@ -112,7 +112,7 @@ module Pokotarou
               print "\e[0m"
               puts ""
     
-              raise SeedError.new
+              raise SeedError.new("Failed generate seed data")
             end
           end
   
